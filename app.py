@@ -7,21 +7,21 @@ import os
 # ------------------------------------------------------------------------------------------------
 st.set_page_config(
     page_title="Library Management System",
-    page_icon="�",
+    page_icon="📚",
     layout="wide", # Use wide layout for better table display
     initial_sidebar_state="auto",
 )
 
 # ------------------------------------------------------------------------------------------------
-# Function to Load and Prepare Data
-# - This function will be cached to improve performance.
+# Function to Load and Prepare Data from JSON
+# - This function is cached to improve performance on reloads.
 # ------------------------------------------------------------------------------------------------
 @st.cache_data
-def load_data(file_path):
-    """Loads book data from a CSV file and prepares it for the app."""
+def load_data(file_path="books.json"):
+    """Loads book data from a JSON file and prepares it for the app."""
     try:
-        df = pd.read_csv(file_path)
-        # Standardize column names for consistency
+        df = pd.read_json(file_path)
+        # Standardize column names for consistency within the app
         df.rename(columns={
             'bid': 'Book ID',
             'title': 'Title',
@@ -29,27 +29,32 @@ def load_data(file_path):
             'category': 'Category',
             'status': 'Status'
         }, inplace=True)
-        # Convert status to a more usable format (YES/NO)
+        # Convert status to a more usable format (YES/NO) for internal logic
         df['Status'] = df['Status'].apply(lambda x: 'NO' if x == 'issued' else 'YES')
         return df
     except FileNotFoundError:
-        st.error(f"Error: The file '{file_path}' was not found. Please make sure it's in the same directory as the app.")
-        return pd.DataFrame() # Return empty dataframe on error
+        st.error(f"Error: The data file '{file_path}' was not found. Please make sure it's in the same directory as the app.")
+        return pd.DataFrame() # Return an empty dataframe on error
+    except Exception as e:
+        st.error(f"An error occurred while loading the data: {e}")
+        return pd.DataFrame()
 
 # ------------------------------------------------------------------------------------------------
 # Session State Initialization
-# - This block runs only once per session and sets up our in-memory "database" from the CSV.
+# - This block runs only once per session to set up the in-memory "database".
 # ------------------------------------------------------------------------------------------------
 if 'books_df' not in st.session_state:
-    # Load the main book data
-    st.session_state.books_df = load_data('Books_data - Sheet1.csv')
+    # Load the main book data from the JSON file
+    st.session_state.books_df = load_data()
     
     # Create the initial issued books DataFrame based on the loaded data
     if not st.session_state.books_df.empty:
         issued_books_initial = st.session_state.books_df[st.session_state.books_df['Status'] == 'NO'].copy()
-        issued_books_initial['Issued To'] = 'Pre-issued' # Placeholder for initially issued books
+        # Add a placeholder for who the book was issued to initially
+        issued_books_initial['Issued To'] = 'Pre-issued' 
         st.session_state.issued_df = issued_books_initial[['Book ID', 'Title', 'Issued To']]
     else:
+        # If loading fails, initialize with an empty DataFrame
         st.session_state.issued_df = pd.DataFrame(columns=['Book ID', 'Title', 'Issued To'])
 
 
@@ -114,7 +119,7 @@ def return_book(bid):
 # Streamlit User Interface
 # ------------------------------------------------------------------------------------------------
 st.title("📚 Library Management System")
-st.caption("Powered by Streamlit and Pandas, using your custom book dataset.")
+st.caption("Powered by Streamlit and Pandas, using your custom JSON dataset.")
 
 st.sidebar.title("Menu")
 choice = st.sidebar.radio(
@@ -133,13 +138,15 @@ if choice == "View All Books":
 elif choice == "Add New Book":
     st.header("Add a New Book")
     with st.form("add_form", clear_on_submit=True):
-        bid = st.text_input("Book ID", help="Must be a unique ID.")
+        # Find the max existing ID to suggest the next one
+        next_id = st.session_state.books_df['Book ID'].max() + 1
+        bid = st.number_input("Book ID", min_value=1, value=next_id, help="Must be a unique ID.")
         title = st.text_input("Book Title")
         author = st.text_input("Author Name")
         category = st.text_input("Category")
         if st.form_submit_button("Add Book"):
             if bid and title and author and category:
-                add_book(int(bid), title, author, category) # Convert bid to int to match CSV
+                add_book(int(bid), title, author, category)
             else:
                 st.warning("Please fill out all fields.")
 
@@ -147,26 +154,30 @@ elif choice == "Issue Book":
     st.header("Issue a Book")
     with st.form("issue_form", clear_on_submit=True):
         available_books = st.session_state.books_df[st.session_state.books_df['Status'] == 'YES']
-        bid = st.selectbox("Select Book to Issue", options=available_books['Book ID'],
-                           format_func=lambda x: f"{x} - {available_books[available_books['Book ID'] == x]['Title'].iloc[0]}")
-        student_name = st.text_input("Student Name")
-        if st.form_submit_button("Issue Book"):
-            if bid and student_name:
-                issue_book(bid, student_name)
-            else:
-                st.warning("Please select a book and enter a student name.")
+        if not available_books.empty:
+            bid = st.selectbox("Select Book to Issue", options=available_books['Book ID'],
+                               format_func=lambda x: f"{x} - {available_books[available_books['Book ID'] == x]['Title'].iloc[0]}")
+            student_name = st.text_input("Student Name")
+            if st.form_submit_button("Issue Book"):
+                if bid and student_name:
+                    issue_book(bid, student_name)
+                else:
+                    st.warning("Please select a book and enter a student name.")
+        else:
+            st.info("There are no available books to issue.")
+
 
 elif choice == "Return Book":
     st.header("Return a Book")
     with st.form("return_form", clear_on_submit=True):
-        issued_books_ids = st.session_state.issued_df['Book ID'].tolist()
-        bid = st.selectbox("Select Book to Return", options=issued_books_ids,
-                           format_func=lambda x: f"{st.session_state.issued_df[st.session_state.issued_df['Book ID'] == x]['Title'].iloc[0]}")
-        if st.form_submit_button("Return Book"):
-            if bid:
+        if not st.session_state.issued_df.empty:
+            issued_books_ids = st.session_state.issued_df['Book ID'].tolist()
+            bid = st.selectbox("Select Book to Return", options=issued_books_ids,
+                               format_func=lambda x: f"{x} - {st.session_state.issued_df[st.session_state.issued_df['Book ID'] == x]['Title'].iloc[0]}")
+            if st.form_submit_button("Return Book"):
                 return_book(bid)
-            else:
-                st.warning("No books are currently issued to be returned.")
+        else:
+            st.info("No books are currently issued to be returned.")
 
 elif choice == "View Issued Books":
     st.header("Currently Issued Books")
@@ -187,4 +198,3 @@ elif choice == "Delete Book":
                 delete_book(bid)
             else:
                 st.warning("Please select a book to delete.")
-�
