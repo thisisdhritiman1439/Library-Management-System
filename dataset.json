@@ -1,0 +1,429 @@
+[
+  {
+    "bid": 1,
+    "title": "Steve Jobs",
+    "author": "Walter Issacson",
+    "category": "Biography",
+    "status": "issued"
+  },
+  {
+    "bid": 2,
+    "title": "Discovery of India",
+    "author": "Jawaharlal Nehru",
+    "category": "History",
+    "status": "issued"
+  },
+  {
+    "bid": 3,
+    "title": "My Experiments with Truth",
+    "author": "Mahatma Gandhi",
+    "category": "Autobiography",
+    "status": "issued"
+  },
+  {
+    "bid": 4,
+    "title": "Object Oriented Programming with C++",
+    "author": "E Balagurusamy",
+    "category": "Education",
+    "status": "issued"
+  },
+  {
+    "bid": 5,
+    "title": "Thinking with type",
+    "author": "Ellen Lupton",
+    "category": "Arts",
+    "status": "issued"
+  },
+  {
+    "bid": 6,
+    "title": "The Photographer's",
+    "author": "Lindsay Adler",
+    "category": "Photography",
+    "status": "issued"
+  },
+  {
+    "bid": 7,
+    "title": "Think and Grow",
+    "author": "Napoleon Hill",
+    "category": "Economics",
+    "status": "issued"
+  },
+  {
+    "bid": 8,
+    "title": "The Fifth Discipline : The Art",
+    "author": "Peter M.Senge",
+    "category": "Management",
+    "status": "issued"
+  },
+  {
+    "bid": 9,
+    "title": "A Theory of Justice",
+    "author": "John Rawls",
+    "category": "Law",
+    "status": "issued"
+  },
+  {
+    "bid": 10,
+    "title": "Eat to Live",
+    "author": "Joel Fuhrman",
+    "category": "Health",
+    "status": "issued"
+  },
+  {
+    "bid": 11,
+    "title": "City of Heavenly Fire",
+    "author": "Cassandra Clare",
+    "category": "Fiction",
+    "status": "available"
+  },
+  {
+    "bid": 12,
+    "title": "Da Vinci Code",
+    "author": "Dan Brown",
+    "category": "Fiction",
+    "status": "available"
+  },
+  {
+    "bid": 13,
+    "title": "War and Peace",
+    "author": "Leo Tolstoy",
+    "category": "Philosophical fiction",
+    "status": "issued"
+  },
+  {
+    "bid": 14,
+    "title": "Python For All",
+    "author": "John Shovic",
+    "category": "Education",
+    "status": "available"
+  },
+  {
+    "bid": 15,
+    "title": "Automate The Boring Stuff With Python",
+    "author": "Al Sweigart",
+    "category": "Education",
+    "status": "available"
+  },
+  {
+    "bid": 16,
+    "title": "Wings Of Fire",
+    "author": "APJ Abdul Kalam",
+    "category": "Autobiography",
+    "status": "available"
+  },
+  {
+    "bid": 17,
+    "title": "Ikigai",
+    "author": "Hector Garcia",
+    "category": "Personal Development",
+    "status": "available"
+  },
+  {
+    "bid": 18,
+    "title": "Who Will Cry When You Will Die",
+    "author": "Robin Sharma",
+    "category": "Personal Development",
+    "status": "available"
+  },
+  {
+    "bid": 19,
+    "title": "Rich Dad Poor Dad",
+    "author": "Robert T. Kiyosaki",
+    "category": "Business",
+    "status": "available"
+  },
+  {
+    "bid": 20,
+    "title": "Immortals of Meluha",
+    "author": "Amish Tirpathi",
+    "category": "High Fantasy",
+    "status": "available"
+  },
+  {
+    "bid": 21,
+    "title": "A Brief History Of Time",
+    "author": "Stephen Hawking",
+    "category": "SPACE",
+    "status": "issued"
+  },
+  {
+    "bid": 22,
+    "title": "I Know Why The Cage Bird Sings",
+    "author": "Maya Anguelo",
+    "category": "Story",
+    "status": "available"
+  },
+  {
+    "bid": 23,
+    "title": "Lord Of Files",
+    "author": "William Golding",
+    "category": "Fiction",
+    "status": "issued"
+  },
+  {
+    "bid": 24,
+    "title": "Loara Dune",
+    "author": "R. D Blackmore",
+    "category": "Fiction",
+    "status": "issued"
+  },
+  {
+    "bid": 25,
+    "title": "Jamacia Inn",
+    "author": "Daphne",
+    "category": "Fiction",
+    "status": "issued"
+  },
+  {
+    "bid": 26,
+    "title": "Kidnapped",
+    "author": "Robert Louis",
+    "category": "Fiction",
+    "status": "available"
+  },
+  {
+    "bid": 27,
+    "title": "Treasure Island",
+    "author": "Robert Louis",
+    "category": "Fiction",
+    "status": "available"
+  },
+  {
+    "bid": 28,
+    "title": "The Call Of Wild",
+    "author": "Jack London",
+    "category": "Fiction",
+    "status": "available"
+  },
+  {
+    "bid": 29,
+    "title": "Charlottes Web",
+    "author": "E. B White",
+    "category": "Fiction",
+    "status": "available"
+  },
+  {
+    "bid": 30,
+    "title": "The Wind In Willows",
+    "author": "Kenneth Grahame",
+    "category": "Fiction",
+    "status": "available"
+  },
+  {
+    "bid": 31,
+    "title": "Being and Time",
+    "author": "Martin Heldegger",
+    "category": "Philosophy",
+    "status": "available"
+  },
+  {
+    "bid": 32,
+    "title": "The Republic",
+    "author": "Rocha Pereia",
+    "category": "Philosophy",
+    "status": "issued"
+  },
+  {
+    "bid": 33,
+    "title": "Critique For Pure Reason",
+    "author": "Paul Guyer",
+    "category": "Philosophy",
+    "status": "available"
+  },
+  {
+    "bid": 34,
+    "title": "The Prince",
+    "author": "Rufus Godwin",
+    "category": "Philosophy",
+    "status": "available"
+  },
+  {
+    "bid": 35,
+    "title": "Ethics",
+    "author": "Stuart Hampshire",
+    "category": "Philosophy",
+    "status": "available"
+  },
+  {
+    "bid": 36,
+    "title": "Long Walk To Freedom",
+    "author": "Nelson Mandela",
+    "category": "Autobiography",
+    "status": "available"
+  },
+  {
+    "bid": 37,
+    "title": "The Dairy Of Young Girl",
+    "author": "Anne Frank",
+    "category": "Autobiography",
+    "status": "available"
+  },
+  {
+    "bid": 38,
+    "title": "Mark Twain",
+    "author": "Mark Twain",
+    "category": "Autobiography",
+    "status": "available"
+  },
+  {
+    "bid": 39,
+    "title": "Mein Kampf",
+    "author": "Adolf Hitler",
+    "category": "Autobiography",
+    "status": "available"
+  },
+  {
+    "bid": 40,
+    "title": "Freakonomics",
+    "author": "Steveb D.Levit",
+    "category": "Economics",
+    "status": "issued"
+  },
+  {
+    "bid": 41,
+    "title": "Thinking Fast and Slow",
+    "author": "Daniel Kahneman",
+    "category": "Economics",
+    "status": "available"
+  },
+  {
+    "bid": 42,
+    "title": "Tell You About Capitalism",
+    "author": "HA-Joon Chang",
+    "category": "Economics",
+    "status": "available"
+  },
+  {
+    "bid": 43,
+    "title": "Animal Spirits",
+    "author": "Akerlof and Shiller",
+    "category": "Economics",
+    "status": "available"
+  },
+  {
+    "bid": 44,
+    "title": "The Black Swan",
+    "author": "Nassim Nicholas Taleb",
+    "category": "Economics",
+    "status": "issued"
+  },
+  {
+    "bid": 45,
+    "title": "1984",
+    "author": "George Orwell",
+    "category": "Story",
+    "status": "available"
+  },
+  {
+    "bid": 46,
+    "title": "The Lord Of Wings",
+    "author": "J.R.R.Tolken",
+    "category": "Story",
+    "status": "issued"
+  },
+  {
+    "bid": 47,
+    "title": "Kite Runner",
+    "author": "Khaled Hosseini",
+    "category": "Story",
+    "status": "available"
+  },
+  {
+    "bid": 48,
+    "title": "Harry Potter",
+    "author": "J.K.Rowling",
+    "category": "Story",
+    "status": "available"
+  },
+  {
+    "bid": 49,
+    "title": "The Book Theif",
+    "author": "Markus Zusak",
+    "category": "Story",
+    "status": "available"
+  },
+  {
+    "bid": 50,
+    "title": "History Of 20th Century",
+    "author": "Martin Gilbert",
+    "category": "History",
+    "status": "available"
+  },
+  {
+    "bid": 51,
+    "title": "Guns,Germs,and Steel",
+    "author": "Jared Daimond",
+    "category": "History",
+    "status": "issued"
+  },
+  {
+    "bid": 52,
+    "title": "A World lit Only by Fire",
+    "author": "William Manchestar",
+    "category": "History",
+    "status": "issued"
+  },
+  {
+    "bid": 53,
+    "title": "The Crusades",
+    "author": "Thomas Asbridge",
+    "category": "History",
+    "status": "available"
+  },
+  {
+    "bid": 54,
+    "title": "Over The Edge Of The World",
+    "author": "Laurence",
+    "category": "History",
+    "status": "available"
+  },
+  {
+    "bid": 55,
+    "title": "A Beautiful Mind",
+    "author": "Sylvia Nasar",
+    "category": "Biography",
+    "status": "available"
+  },
+  {
+    "bid": 56,
+    "title": "The Enigma",
+    "author": "Andrew Hodges",
+    "category": "Biography",
+    "status": "available"
+  },
+  {
+    "bid": 57,
+    "title": "Alexander Hamilton",
+    "author": "Ron Chernow",
+    "category": "Biography",
+    "status": "available"
+  },
+  {
+    "bid": 58,
+    "title": "Barracoon",
+    "author": "Zora Neale Hurston",
+    "category": "Biography",
+    "status": "available"
+  },
+  {
+    "bid": 59,
+    "title": "CHURCHILL : A Life",
+    "author": "MArtin Glibert",
+    "category": "Biography",
+    "status": "available"
+  },
+  {
+    "bid": 60,
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "category": "Historical novel",
+    "status": "issued"
+  },
+  {
+    "bid": 61,
+    "title": "Les Misérables",
+    "author": "Victor Hugo",
+    "category": "Historical fiction",
+    "status": "available"
+  }
+]
