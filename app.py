@@ -40,7 +40,7 @@ def save_issued_data(df):
 # Streamlit App Interface
 # ---------------------------------------------
 st.set_page_config(page_title="Library Management System", page_icon="📚", layout="wide")
-st.title("📚 ProjectGurukul Library Management System")
+st.title("📚 Library Management System")
 
 # Sidebar Menu
 menu = st.sidebar.selectbox(
