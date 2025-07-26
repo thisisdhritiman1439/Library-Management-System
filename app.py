@@ -25,8 +25,11 @@ def send_otp_simulated(contact, otp):
 
 def load_json(file_path):
     if os.path.exists(file_path):
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return []
     return []
 
 def save_json(file_path, data):
@@ -98,21 +101,18 @@ def save_reservations(reservations):
 
 def notify_due_books(books_df):
     today = datetime.date.today()
-    warning = False
     for _, row in books_df.iterrows():
         if row["status"] == "issued" and row["due_date"]:
             due = datetime.date.fromisoformat(row["due_date"])
             if 0 <= (due - today).days <= 3:
                 st.warning(f"📢 Reminder: '{row['title']}' is due on {row['due_date']} for {row['issued_to']}")
-                warning = True
-    return warning
 
 def recommend_books(df, user):
     past = df[df["issued_to"] == user]
     if past.empty:
-        return df.sample(3)
+        return df[df["status"] == "available"].sample(min(3, len(df)))
     categories = past["category"].value_counts().index.tolist()
-    return df[df["category"].isin(categories) & (df["status"] == "available")].sample(min(3, len(df)))
+    return df[(df["category"].isin(categories)) & (df["status"] == "available")].sample(min(3, len(df)))
 
 def analytics_dashboard(df):
     st.header("📊 Analytics Dashboard")
@@ -213,6 +213,26 @@ if st.session_state.logged_in:
     books_df = load_books()
     notify_due_books(books_df)
     librarian_bot()
+
+    st.subheader("📚 Recommended Books for You")
+    recs = recommend_books(books_df, st.session_state.username)
+    for _, row in recs.iterrows():
+        st.markdown(f"### {row['title']} by {row['author']}")
+        st.image(row['cover_url'] or "https://via.placeholder.com/120x180", width=120)
+        st.write(row['description'] or "No description available.")
+        st.markdown("---")
+
     if st.session_state.role == "admin":
         analytics_dashboard(books_df)
-    st.dataframe(books_df)
+
+    st.header("📘 All Books")
+    for _, row in books_df.iterrows():
+        with st.container():
+            cols = st.columns([1, 4])
+            with cols[0]:
+                st.image(row['cover_url'] or "https://via.placeholder.com/120x180", width=120)
+            with cols[1]:
+                st.subheader(f"{row['title']} by {row['author']}")
+                st.markdown(f"**Category:** {row['category']} | **Status:** {row['status']}")
+                st.write(row['description'] or "No description available.")
+                st.markdown("---")
