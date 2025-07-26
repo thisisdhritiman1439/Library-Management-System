@@ -116,11 +116,11 @@ def recommend_books(df, user):
 
 def analytics_dashboard(df):
     st.header("📊 Analytics Dashboard")
-    most_borrowed = df[df["status"] == "issued"]["title"].value_counts().head(5)
+    most_borrowed = df["title"].value_counts().head(5)
     st.subheader("Most Borrowed Books")
     st.bar_chart(most_borrowed)
 
-    users = df[df["status"] == "issued"]["issued_to"].value_counts().head(5)
+    users = df["issued_to"].value_counts().head(5)
     st.subheader("Active Users")
     st.bar_chart(users)
 
@@ -166,7 +166,6 @@ if "role" not in st.session_state:
 
 st.title("📚 Library Management System")
 
-# ------------------ Signup ------------------
 if not st.session_state.logged_in:
     with st.expander("📝 Sign Up (Only if you want to create a new account)"):
         su_user = st.text_input("New Username", key="signup_user")
@@ -180,7 +179,6 @@ if not st.session_state.logged_in:
             else:
                 st.error("⚠️ Username exists.")
 
-# ------------------ Login ------------------
 if not st.session_state.logged_in and st.session_state.auth_stage == "login":
     login_user = st.text_input("Username", key="login_user")
     login_pass = st.text_input("Password", type="password", key="login_pass")
@@ -207,7 +205,6 @@ elif st.session_state.auth_stage == "otp":
         else:
             st.error("Incorrect OTP")
 
-# ------------------ Dashboard ------------------
 if st.session_state.logged_in:
     st.success(f"Welcome, {st.session_state.username}! 🎉")
     books_df = load_books()
