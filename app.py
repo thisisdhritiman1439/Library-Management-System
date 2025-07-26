@@ -5,6 +5,7 @@ import json
 import hashlib
 import random
 import datetime
+import requests
 
 # ------------------ File paths ------------------
 BOOKS_FILE = "books_data.json"
@@ -33,17 +34,32 @@ def load_books():
         try:
             data = json.load(open(BOOKS_FILE, "r", encoding="utf-8"))
             df = pd.DataFrame(data)
-            for col in ["issued_to", "issue_date", "due_date"]:
+            for col in ["issued_to", "issue_date", "due_date", "description", "cover_url"]:
                 if col not in df.columns:
                     df[col] = ""
             return df
         except:
-            return pd.DataFrame(columns=["bid","title","author","category","status","issued_to","issue_date","due_date"])
-    return pd.DataFrame(columns=["bid","title","author","category","status","issued_to","issue_date","due_date"])
+            return pd.DataFrame(columns=["bid","title","author","category","status","issued_to","issue_date","due_date","description","cover_url"])
+    return pd.DataFrame(columns=["bid","title","author","category","status","issued_to","issue_date","due_date","description","cover_url"])
 
 def save_books(df):
     with open(BOOKS_FILE, "w", encoding="utf-8") as f:
         json.dump(df.to_dict(orient="records"), f, indent=4, ensure_ascii=False)
+
+# ---- Book Info via ISBN (Google Books API) ----
+def fetch_book_info_by_isbn(isbn):
+    url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}"
+    try:
+        response = requests.get(url)
+        data = response.json()
+        if "items" in data:
+            volume_info = data["items"][0]["volumeInfo"]
+            description = volume_info.get("description", "No description available.")
+            cover_url = volume_info.get("imageLinks", {}).get("thumbnail", "")
+            return description, cover_url
+    except:
+        pass
+    return "No description available.", ""
 
 # ------------------ Auth helpers ------------------
 def signup(username, password, role, email, phone):
@@ -86,9 +102,8 @@ def send_otp_simulated(contact, otp):
 # ------------------ Streamlit App ------------------
 st.set_page_config(page_title="Library Management System", page_icon="📚", layout="wide")
 
-# session states
 if "auth_stage" not in st.session_state:
-    st.session_state.auth_stage = "login"  # login, otp, forgot, reset, loggedin
+    st.session_state.auth_stage = "login"
 if "pending_user" not in st.session_state:
     st.session_state.pending_user = None
 if "otp" not in st.session_state:
@@ -179,32 +194,30 @@ if st.session_state.auth_stage == "otp":
 # ------------------ MAIN DASHBOARD ------------------
 if st.session_state.get("logged_in", False):
     st.subheader(f"Welcome, {st.session_state.username} ({st.session_state.role})")
-
     books_df = load_books()
 
-    menu_options = ["View Books", "Recommended Books", "Issue Book", "Return Book", "View Issued Books", "Logout"]
+    menu_options = ["View Books", "Issue Book", "Return Book", "View Issued Books", "Logout"]
     if st.session_state.role == "admin":
-        menu_options = ["View Books", "Add Book", "Delete Book", "Issue Book", "Return Book", "View Issued Books", "Logout"]
+        menu_options.insert(1, "Add Book")
+        menu_options.insert(2, "Delete Book")
 
     menu = st.sidebar.radio("📌 Menu", menu_options)
 
     if menu == "View Books":
         st.header("📘 All Books")
-        st.dataframe(books_df)
-
-    elif menu == "Recommended Books" and st.session_state.role == "student":
-        st.header("🤖 Recommended Books for You")
-        user_books = books_df[books_df["issued_to"] == st.session_state.username]
-        if user_books.empty:
-            st.info("No history available. Issue books to get recommendations.")
-        else:
-            fav_categories = user_books["category"].value_counts().index.tolist()
-            recommended = books_df[(books_df["status"] == "available") & (books_df["category"].isin(fav_categories))]
-            recommended = recommended[recommended["issued_to"] != st.session_state.username]
-            if recommended.empty:
-                st.info("No similar books available now.")
-            else:
-                st.dataframe(recommended)
+        for _, row in books_df.iterrows():
+            with st.container():
+                cols = st.columns([1, 3])
+                with cols[0]:
+                    if row["cover_url"]:
+                        st.image(row["cover_url"], width=120)
+                    else:
+                        st.text("No Cover")
+                with cols[1]:
+                    st.subheader(f"{row['title']} by {row['author']}")
+                    st.markdown(f"**Category:** {row['category']}  \n**Status:** {row['status']}")
+                    st.markdown(f"**Description:** {row.get('description', 'No description available.')}")
+                    st.markdown("---")
 
     elif menu == "Add Book" and st.session_state.role == "admin":
         st.header("➕ Add Book")
@@ -212,6 +225,17 @@ if st.session_state.get("logged_in", False):
         title = st.text_input("Title")
         author = st.text_input("Author")
         category = st.text_input("Category")
+        isbn = st.text_input("ISBN (optional)")
+
+        if isbn:
+            if st.button("Fetch Info from ISBN"):
+                desc, cover = fetch_book_info_by_isbn(isbn)
+                st.session_state.book_description = desc
+                st.session_state.book_cover_url = cover
+
+        description = st.text_area("Description", value=st.session_state.get("book_description", ""))
+        cover_url = st.text_input("Cover Image URL", value=st.session_state.get("book_cover_url", ""))
+
         if st.button("Add Book"):
             if bid and title and author and category:
                 if bid in books_df["bid"].values:
@@ -225,7 +249,9 @@ if st.session_state.get("logged_in", False):
                         "status": "available",
                         "issued_to": "",
                         "issue_date": "",
-                        "due_date": ""
+                        "due_date": "",
+                        "description": description,
+                        "cover_url": cover_url
                     }])
                     books_df = pd.concat([books_df, new_book], ignore_index=True)
                     save_books(books_df)
