@@ -182,7 +182,7 @@ if st.session_state.get("logged_in", False):
 
     books_df = load_books()
 
-    menu_options = ["View Books", "Issue Book", "Return Book", "View Issued Books", "Logout"]
+    menu_options = ["View Books", "Recommended Books", "Issue Book", "Return Book", "View Issued Books", "Logout"]
     if st.session_state.role == "admin":
         menu_options = ["View Books", "Add Book", "Delete Book", "Issue Book", "Return Book", "View Issued Books", "Logout"]
 
@@ -191,6 +191,20 @@ if st.session_state.get("logged_in", False):
     if menu == "View Books":
         st.header("📘 All Books")
         st.dataframe(books_df)
+
+    elif menu == "Recommended Books" and st.session_state.role == "student":
+        st.header("🤖 Recommended Books for You")
+        user_books = books_df[books_df["issued_to"] == st.session_state.username]
+        if user_books.empty:
+            st.info("No history available. Issue books to get recommendations.")
+        else:
+            fav_categories = user_books["category"].value_counts().index.tolist()
+            recommended = books_df[(books_df["status"] == "available") & (books_df["category"].isin(fav_categories))]
+            recommended = recommended[recommended["issued_to"] != st.session_state.username]
+            if recommended.empty:
+                st.info("No similar books available now.")
+            else:
+                st.dataframe(recommended)
 
     elif menu == "Add Book" and st.session_state.role == "admin":
         st.header("➕ Add Book")
