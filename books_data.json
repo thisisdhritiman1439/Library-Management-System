@@ -4,426 +4,731 @@
     "title": "Steve Jobs",
     "author": "Walter Issacson",
     "category": "Biography",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Steve Jobs by Walter Issacson.",
+    "cover_url": ""
   },
   {
     "bid": 2,
     "title": "Discovery of India",
     "author": "Jawaharlal Nehru",
     "category": "History",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Discovery of India by Jawaharlal Nehru.",
+    "cover_url": ""
   },
   {
     "bid": 3,
     "title": "My Experiments with Truth",
     "author": "Mahatma Gandhi",
     "category": "Autobiography",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for My Experiments with Truth by Mahatma Gandhi.",
+    "cover_url": ""
   },
   {
     "bid": 4,
     "title": "Object Oriented Programming with C++",
     "author": "E Balagurusamy",
     "category": "Education",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Object Oriented Programming with C++ by E Balagurusamy.",
+    "cover_url": ""
   },
   {
     "bid": 5,
     "title": "Thinking with type",
     "author": "Ellen Lupton",
     "category": "Arts",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Thinking with type by Ellen Lupton.",
+    "cover_url": ""
   },
   {
     "bid": 6,
     "title": "The Photographer's",
     "author": "Lindsay Adler",
     "category": "Photography",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Photographer's by Lindsay Adler.",
+    "cover_url": ""
   },
   {
     "bid": 7,
     "title": "Think and Grow",
     "author": "Napoleon Hill",
     "category": "Economics",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Think and Grow by Napoleon Hill.",
+    "cover_url": ""
   },
   {
     "bid": 8,
     "title": "The Fifth Discipline : The Art",
     "author": "Peter M.Senge",
     "category": "Management",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Fifth Discipline : The Art by Peter M.Senge.",
+    "cover_url": ""
   },
   {
     "bid": 9,
     "title": "A Theory of Justice",
     "author": "John Rawls",
     "category": "Law",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for A Theory of Justice by John Rawls.",
+    "cover_url": ""
   },
   {
     "bid": 10,
     "title": "Eat to Live",
     "author": "Joel Fuhrman",
     "category": "Health",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Eat to Live by Joel Fuhrman.",
+    "cover_url": ""
   },
   {
     "bid": 11,
     "title": "City of Heavenly Fire",
     "author": "Cassandra Clare",
     "category": "Fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for City of Heavenly Fire by Cassandra Clare.",
+    "cover_url": ""
   },
   {
     "bid": 12,
     "title": "Da Vinci Code",
     "author": "Dan Brown",
     "category": "Fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Da Vinci Code by Dan Brown.",
+    "cover_url": ""
   },
   {
     "bid": 13,
     "title": "War and Peace",
     "author": "Leo Tolstoy",
     "category": "Philosophical fiction",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for War and Peace by Leo Tolstoy.",
+    "cover_url": ""
   },
   {
     "bid": 14,
     "title": "Python For All",
     "author": "John Shovic",
     "category": "Education",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Python For All by John Shovic.",
+    "cover_url": ""
   },
   {
     "bid": 15,
     "title": "Automate The Boring Stuff With Python",
     "author": "Al Sweigart",
     "category": "Education",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Automate The Boring Stuff With Python by Al Sweigart.",
+    "cover_url": ""
   },
   {
     "bid": 16,
     "title": "Wings Of Fire",
     "author": "APJ Abdul Kalam",
     "category": "Autobiography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Wings Of Fire by APJ Abdul Kalam.",
+    "cover_url": ""
   },
   {
     "bid": 17,
     "title": "Ikigai",
     "author": "Hector Garcia",
     "category": "Personal Development",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Ikigai by Hector Garcia.",
+    "cover_url": ""
   },
   {
     "bid": 18,
     "title": "Who Will Cry When You Will Die",
     "author": "Robin Sharma",
     "category": "Personal Development",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Who Will Cry When You Will Die by Robin Sharma.",
+    "cover_url": ""
   },
   {
     "bid": 19,
     "title": "Rich Dad Poor Dad",
     "author": "Robert T. Kiyosaki",
     "category": "Business",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Rich Dad Poor Dad by Robert T. Kiyosaki.",
+    "cover_url": ""
   },
   {
     "bid": 20,
     "title": "Immortals of Meluha",
     "author": "Amish Tirpathi",
     "category": "High Fantasy",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Immortals of Meluha by Amish Tirpathi.",
+    "cover_url": ""
   },
   {
     "bid": 21,
     "title": "A Brief History Of Time",
     "author": "Stephen Hawking",
     "category": "SPACE",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for A Brief History Of Time by Stephen Hawking.",
+    "cover_url": ""
   },
   {
     "bid": 22,
     "title": "I Know Why The Cage Bird Sings",
     "author": "Maya Anguelo",
     "category": "Story",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for I Know Why The Cage Bird Sings by Maya Anguelo.",
+    "cover_url": ""
   },
   {
     "bid": 23,
     "title": "Lord Of Files",
     "author": "William Golding",
     "category": "Fiction",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Lord Of Files by William Golding.",
+    "cover_url": ""
   },
   {
     "bid": 24,
     "title": "Loara Dune",
     "author": "R. D Blackmore",
     "category": "Fiction",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Loara Dune by R. D Blackmore.",
+    "cover_url": ""
   },
   {
     "bid": 25,
     "title": "Jamacia Inn",
     "author": "Daphne",
     "category": "Fiction",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Jamacia Inn by Daphne.",
+    "cover_url": ""
   },
   {
     "bid": 26,
     "title": "Kidnapped",
     "author": "Robert Louis",
     "category": "Fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Kidnapped by Robert Louis.",
+    "cover_url": ""
   },
   {
     "bid": 27,
     "title": "Treasure Island",
     "author": "Robert Louis",
     "category": "Fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Treasure Island by Robert Louis.",
+    "cover_url": ""
   },
   {
     "bid": 28,
     "title": "The Call Of Wild",
     "author": "Jack London",
     "category": "Fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Call Of Wild by Jack London.",
+    "cover_url": ""
   },
   {
     "bid": 29,
     "title": "Charlottes Web",
     "author": "E. B White",
     "category": "Fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Charlottes Web by E. B White.",
+    "cover_url": ""
   },
   {
     "bid": 30,
     "title": "The Wind In Willows",
     "author": "Kenneth Grahame",
     "category": "Fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Wind In Willows by Kenneth Grahame.",
+    "cover_url": ""
   },
   {
     "bid": 31,
     "title": "Being and Time",
     "author": "Martin Heldegger",
     "category": "Philosophy",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Being and Time by Martin Heldegger.",
+    "cover_url": ""
   },
   {
     "bid": 32,
     "title": "The Republic",
     "author": "Rocha Pereia",
     "category": "Philosophy",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Republic by Rocha Pereia.",
+    "cover_url": ""
   },
   {
     "bid": 33,
     "title": "Critique For Pure Reason",
     "author": "Paul Guyer",
     "category": "Philosophy",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Critique For Pure Reason by Paul Guyer.",
+    "cover_url": ""
   },
   {
     "bid": 34,
     "title": "The Prince",
     "author": "Rufus Godwin",
     "category": "Philosophy",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Prince by Rufus Godwin.",
+    "cover_url": ""
   },
   {
     "bid": 35,
     "title": "Ethics",
     "author": "Stuart Hampshire",
     "category": "Philosophy",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Ethics by Stuart Hampshire.",
+    "cover_url": ""
   },
   {
     "bid": 36,
     "title": "Long Walk To Freedom",
     "author": "Nelson Mandela",
     "category": "Autobiography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Long Walk To Freedom by Nelson Mandela.",
+    "cover_url": ""
   },
   {
     "bid": 37,
     "title": "The Dairy Of Young Girl",
     "author": "Anne Frank",
     "category": "Autobiography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Dairy Of Young Girl by Anne Frank.",
+    "cover_url": ""
   },
   {
     "bid": 38,
     "title": "Mark Twain",
     "author": "Mark Twain",
     "category": "Autobiography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Mark Twain by Mark Twain.",
+    "cover_url": ""
   },
   {
     "bid": 39,
     "title": "Mein Kampf",
     "author": "Adolf Hitler",
     "category": "Autobiography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Mein Kampf by Adolf Hitler.",
+    "cover_url": ""
   },
   {
     "bid": 40,
     "title": "Freakonomics",
     "author": "Steveb D.Levit",
     "category": "Economics",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Freakonomics by Steveb D.Levit.",
+    "cover_url": ""
   },
   {
     "bid": 41,
     "title": "Thinking Fast and Slow",
     "author": "Daniel Kahneman",
     "category": "Economics",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Thinking Fast and Slow by Daniel Kahneman.",
+    "cover_url": ""
   },
   {
     "bid": 42,
     "title": "Tell You About Capitalism",
     "author": "HA-Joon Chang",
     "category": "Economics",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Tell You About Capitalism by HA-Joon Chang.",
+    "cover_url": ""
   },
   {
     "bid": 43,
     "title": "Animal Spirits",
     "author": "Akerlof and Shiller",
     "category": "Economics",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Animal Spirits by Akerlof and Shiller.",
+    "cover_url": ""
   },
   {
     "bid": 44,
     "title": "The Black Swan",
     "author": "Nassim Nicholas Taleb",
     "category": "Economics",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Black Swan by Nassim Nicholas Taleb.",
+    "cover_url": ""
   },
   {
     "bid": 45,
     "title": "1984",
     "author": "George Orwell",
     "category": "Story",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for 1984 by George Orwell.",
+    "cover_url": ""
   },
   {
     "bid": 46,
     "title": "The Lord Of Wings",
     "author": "J.R.R.Tolken",
     "category": "Story",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Lord Of Wings by J.R.R.Tolken.",
+    "cover_url": ""
   },
   {
     "bid": 47,
     "title": "Kite Runner",
     "author": "Khaled Hosseini",
     "category": "Story",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Kite Runner by Khaled Hosseini.",
+    "cover_url": ""
   },
   {
     "bid": 48,
     "title": "Harry Potter",
     "author": "J.K.Rowling",
     "category": "Story",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Harry Potter by J.K.Rowling.",
+    "cover_url": ""
   },
   {
     "bid": 49,
     "title": "The Book Theif",
     "author": "Markus Zusak",
     "category": "Story",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Book Theif by Markus Zusak.",
+    "cover_url": ""
   },
   {
     "bid": 50,
     "title": "History Of 20th Century",
     "author": "Martin Gilbert",
     "category": "History",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for History Of 20th Century by Martin Gilbert.",
+    "cover_url": ""
   },
   {
     "bid": 51,
     "title": "Guns,Germs,and Steel",
     "author": "Jared Daimond",
     "category": "History",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Guns,Germs,and Steel by Jared Daimond.",
+    "cover_url": ""
   },
   {
     "bid": 52,
     "title": "A World lit Only by Fire",
     "author": "William Manchestar",
     "category": "History",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for A World lit Only by Fire by William Manchestar.",
+    "cover_url": ""
   },
   {
     "bid": 53,
     "title": "The Crusades",
     "author": "Thomas Asbridge",
     "category": "History",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Crusades by Thomas Asbridge.",
+    "cover_url": ""
   },
   {
     "bid": 54,
     "title": "Over The Edge Of The World",
     "author": "Laurence",
     "category": "History",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Over The Edge Of The World by Laurence.",
+    "cover_url": ""
   },
   {
     "bid": 55,
     "title": "A Beautiful Mind",
     "author": "Sylvia Nasar",
     "category": "Biography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for A Beautiful Mind by Sylvia Nasar.",
+    "cover_url": ""
   },
   {
     "bid": 56,
     "title": "The Enigma",
     "author": "Andrew Hodges",
     "category": "Biography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for The Enigma by Andrew Hodges.",
+    "cover_url": ""
   },
   {
     "bid": 57,
     "title": "Alexander Hamilton",
     "author": "Ron Chernow",
     "category": "Biography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Alexander Hamilton by Ron Chernow.",
+    "cover_url": ""
   },
   {
     "bid": 58,
     "title": "Barracoon",
     "author": "Zora Neale Hurston",
     "category": "Biography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Barracoon by Zora Neale Hurston.",
+    "cover_url": ""
   },
   {
     "bid": 59,
     "title": "CHURCHILL : A Life",
     "author": "MArtin Glibert",
     "category": "Biography",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for CHURCHILL : A Life by MArtin Glibert.",
+    "cover_url": ""
   },
   {
     "bid": 60,
     "title": "A Tale of Two Cities",
     "author": "Charles Dickens",
     "category": "Historical novel",
-    "status": "issued"
+    "status": "issued",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for A Tale of Two Cities by Charles Dickens.",
+    "cover_url": ""
   },
   {
     "bid": 61,
     "title": "Les Misérables",
     "author": "Victor Hugo",
     "category": "Historical fiction",
-    "status": "available"
+    "status": "available",
+    "issued_to": "",
+    "issue_date": "",
+    "due_date": "",
+    "description": "Description for Les Misérables by Victor Hugo.",
+    "cover_url": ""
   }
 ]
