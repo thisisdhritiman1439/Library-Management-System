@@ -137,7 +137,7 @@ def analytics_dashboard(df):
 # ------------------ Chatbot Assistant ------------------
 def librarian_bot():
     st.subheader("💬 Ask the Librarian")
-    user_q = st.text_input("Ask your question")
+    user_q = st.text_input("Ask your question", key="chatbot_input")
     if user_q:
         if "issue" in user_q.lower():
             st.info("Go to 'Issue Book' to borrow a book.")
@@ -166,15 +166,15 @@ if "role" not in st.session_state:
 
 st.title("📚 Library Management System")
 
-# ------------------ Signup (only show if not logged in and selected explicitly) ------------------
+# ------------------ Signup ------------------
 if not st.session_state.logged_in:
     with st.expander("📝 Sign Up (Only if you want to create a new account)"):
-        su_user = st.text_input("Username")
-        su_pass = st.text_input("Password", type="password")
-        su_email = st.text_input("Email")
-        su_phone = st.text_input("Phone Number")
-        su_role = st.selectbox("Role", ["student", "admin"])
-        if st.button("Register"):
+        su_user = st.text_input("New Username", key="signup_user")
+        su_pass = st.text_input("New Password", type="password", key="signup_pass")
+        su_email = st.text_input("Email", key="signup_email")
+        su_phone = st.text_input("Phone", key="signup_phone")
+        su_role = st.selectbox("Role", ["student", "admin"], key="signup_role")
+        if st.button("Register", key="signup_btn"):
             if signup(su_user, su_pass, su_role, su_email, su_phone):
                 st.success("✅ Account created.")
             else:
@@ -182,9 +182,9 @@ if not st.session_state.logged_in:
 
 # ------------------ Login ------------------
 if not st.session_state.logged_in and st.session_state.auth_stage == "login":
-    login_user = st.text_input("Username")
-    login_pass = st.text_input("Password", type="password")
-    if st.button("Login"):
+    login_user = st.text_input("Username", key="login_user")
+    login_pass = st.text_input("Password", type="password", key="login_pass")
+    if st.button("Login", key="login_btn"):
         user = check_credentials(login_user, login_pass)
         if user:
             otp = generate_otp()
@@ -196,8 +196,8 @@ if not st.session_state.logged_in and st.session_state.auth_stage == "login":
             st.error("Invalid credentials.")
 
 elif st.session_state.auth_stage == "otp":
-    otp_input = st.text_input("Enter OTP")
-    if st.button("Verify"):
+    otp_input = st.text_input("Enter OTP", key="otp_input")
+    if st.button("Verify", key="otp_btn"):
         if otp_input == st.session_state.otp:
             st.session_state.logged_in = True
             st.session_state.username = st.session_state.pending_user
@@ -210,4 +210,9 @@ elif st.session_state.auth_stage == "otp":
 # ------------------ Dashboard ------------------
 if st.session_state.logged_in:
     st.success(f"Welcome, {st.session_state.username}! 🎉")
-    # (the rest of the dashboard code continues as-is)
+    books_df = load_books()
+    notify_due_books(books_df)
+    librarian_bot()
+    if st.session_state.role == "admin":
+        analytics_dashboard(books_df)
+    st.dataframe(books_df)
