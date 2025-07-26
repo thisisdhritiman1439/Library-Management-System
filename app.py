@@ -21,7 +21,8 @@ def generate_otp():
     return str(random.randint(100000, 999999))
 
 def send_otp_simulated(contact, otp):
-    st.info(f"(Simulation) OTP sent to {contact}: **{otp}**")
+    st.session_state.otp_display = f"(Simulation) OTP sent to {contact}: **{otp}**"
+
 
 def load_json(file_path):
     if os.path.exists(file_path):
@@ -163,6 +164,8 @@ if "username" not in st.session_state:
     st.session_state.username = ""
 if "role" not in st.session_state:
     st.session_state.role = ""
+if "otp_display" not in st.session_state:
+    st.session_state.otp_display = ""
 
 st.title("📚 Library Management System")
 
@@ -194,6 +197,7 @@ if not st.session_state.logged_in and st.session_state.auth_stage == "login":
             st.error("Invalid credentials.")
 
 elif st.session_state.auth_stage == "otp":
+    st.info(st.session_state.otp_display)
     otp_input = st.text_input("Enter OTP", key="otp_input")
     if st.button("Verify", key="otp_btn"):
         if otp_input == st.session_state.otp:
