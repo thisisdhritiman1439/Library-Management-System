@@ -1,100 +1,143 @@
-# Library-Management-System
+# 📚 Library Management System using Python and Streamlit
 
-A simple, yet effective, library management system that runs entirely in the command line. This application allows users to manage a collection of books, track issued books, and handle returns without the need for a database or external dependencies beyond the `pandas` library.
+A full-featured, role-based **Library Management System** built using **Python** and **Streamlit**, designed to digitize and automate library operations such as book issuing, returns, viewing, recommendations, and more. The system supports both **Students** and **Librarians**, offering secure login, detailed book previews, personalized recommendations, and data stored in **JSON** format.
 
-  
+---
 
-## Demonstration
+## 🚀 Features
 
-Here's a quick look at the application's main menu and how to interact with it:
+### 🔐 User Authentication
+- Signup/Login with **Name**, **Mobile Number**, **Email**, **Password**, and **Role** (Student/Librarian/Others).
+- Role-based access (Librarian-exclusive features).
+
+### 📖 Book Management
+- **View All Books** with:
+  - Book ID, Title, Author
+  - Cover image, Description
+  - Availability Status
+
+- **Add New Book** *(Librarian only)*  
+- **Delete Book** *(Librarian only)*  
+- **Book Overview with Index Page**  
+- JSON-based book storage for portability and flexibility.
+
+### 📋 Student Utilities
+- **Add to Book List** (Wishlist/Favorites before issuing)
+- **Issue Book** with:
+  - Due date tracking
+  - Countdown on days remaining
+- **Return Book** to mark availability
+- **View Issued Books**
+
+### 🤖 Book Recommendation System
+- Suggests books based on past borrowing history and category.
+- Enhances discovery of related books.
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Usage |
+|------------|-------|
+| `Python`   | Backend & Logic |
+| `Streamlit` | Frontend UI |
+| `JSON` | Data storage for books and users |
+| `Pandas` | Data processing and management |
+| `Streamlit Cloud` | Deployment platform |
+| `GitHub` | Version Control & Hosting |
+
+---
+
+## 📂 Folder Structure
 
 ```
-📚 Library Management System 📚
----------------------------------
-1. View All Books
-2. Add New Book
-3. Issue Book
-4. Return Book
-5. View Issued Books
-6. Delete Book
-7. Exit
----------------------------------
-Enter your choice (1-7): 1
 
---- Complete Library Catalog ---
-  Book ID                  Title               Author Status
-     B001       The Great Gatsby  F. Scott Fitzgerald    YES
-     B002  To Kill a Mockingbird           Harper Lee    YES
-     B003                   1984        George Orwell     NO
-     B004    Pride and Prejudice          Jane Austen    YES
-     B005  The Catcher in the Rye        J.D. Salinger     NO
+📁 library-management-system/
+│
+├── 📄 app.py                  # Main Streamlit application
+├── 📁 assets/                 # Book cover images
+├── 📄 books.json              # Book data with descriptions & availability
+├── 📄 users.json              # User data (students/librarians)
+├── 📄 issued\_books.json       # Issued book records
+├── 📄 requirements.txt        # Python dependencies
+└── 📄 README.md               # This file
 
-Press Enter to return to the menu...
-```
+````
 
------
+---
 
-## ✨ Features
+## 🖥️ Live Demo
 
-  * **View All Books**: Displays a complete list of all books in the library, including their ID, title, author, and availability status.
-  * **Add New Book**: Easily add new books to the library collection.
-  * **Issue Book**: Track which books are loaned out to which students.
-  * **Return Book**: Process the return of an issued book, making it available again.
-  * **View Issued Books**: Get a quick overview of all books currently checked out.
-  * **Delete Book**: Remove books from the library collection.
-  * **In-Memory Data**: Uses Pandas DataFrames to manage data, meaning no database setup is required. The data persists as long as the application is running.
+🌐 **Try the app now**:  
+[🔗 Live Streamlit App](https://library-management-system-ef4yqfughzl8otmr6uwkzy.streamlit.app/)
 
------
+---
 
-## 🚀 Getting Started
+## 📌 How to Run Locally
 
-### Prerequisites
+1. Clone this repo:
+```bash
+git clone https://github.com/thisisdhritiman1439/Library-Management-System.git
+cd Library-Management-System
+````
 
-Make sure you have Python 3.6 or newer installed on your system. You will also need the `pandas` library. You can install it using pip:
+2. Install required packages:
 
 ```bash
-pip install pandas
+pip install -r requirements.txt
 ```
 
-### Running the Application
-
-1.  Save the code as a Python file (e.g., `library_cli.py`).
-2.  Open your terminal or command prompt.
-3.  Navigate to the directory where you saved the file.
-4.  Run the application with the following command:
-
-<!-- end list -->
+3. Run the app:
 
 ```bash
-python library_cli.py
+streamlit run app.py
 ```
 
------
+---
 
-## 📖 How to Use
+## 📷 Screenshots
 
-Once the application is running, you will see a menu with the following options:
+> Add screenshots in the `assets/` folder and embed them here:
 
-1.  **View All Books**: Shows a table of all books.
-2.  **Add New Book**: Prompts you to enter the ID, title, and author for a new book.
-3.  **Issue Book**: Asks for the Book ID and the name of the student who is borrowing it.
-4.  **Return Book**: Asks for the Book ID of the book being returned.
-5.  **View Issued Books**: Shows a table of all books currently on loan.
-6.  **Delete Book**: Prompts you for the ID of the book you wish to remove permanently.
-7.  **Exit**: Closes the application.
+* ✅ Login & Sign Up
+* 📚 View All Books
+* 📘 Book Description + Index
+* ➕ Add/Delete Book
+* 📥 Issue/Return Book
+* 🤖 Recommendation Panel
 
-Simply type the number corresponding to your choice and press `Enter` to proceed.
+---
 
------
+## 📈 Future Enhancements
 
-## 🤝 Contributing
+* 📧 Email notifications for book due reminders.
+* 🔍 Search & filter system for faster book lookup.
+* 🧾 Export issued book reports to CSV.
+* 🛡️ OTP-based authentication.
+* 📊 Admin Analytics Dashboard.
 
-Contributions are welcome\! If you have ideas for improvements or find a bug, feel free to open an issue or submit a pull request.
+---
 
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+## 👨‍💻 Developers
 
------
+| Name                     | Role                     |
+| ------------------------ | ------------------------ |
+| Khandakar Nafees Hossain | Project Lead & Developer |
+| Dhritiman Bera           | Developer & Designer     |
+| Parthib Mahapatra        | Tester & Deployment      |
+| Mr. Subhabrata Sengupta  | Faculty Guide            |
+| Dr. Rupayan Das          | Faculty Guide            |
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🤝 Acknowledgments
+
+* Built with ❤️ using Python and Streamlit
+* Inspired by the real-world challenges of manual library systems
+]
