@@ -9,7 +9,69 @@
     "issue_date": "",
     "due_date": "",
     "description": "Description for Steve Jobs by Walter Issacson.",
-    "cover_url": ""
+    "cover_url": ""[
+  {
+    "id": "B001",
+    "title": "Steve Jobs",
+    "author": "Walter Isaacson",
+    "cover": "https://images-na.ssl-images-amazon.com/images/I/71zF6lUgWwL.jpg",
+    "description": "Description for Steve Jobs by Walter Issacson.",
+    "index": ["Chapter 1", "Chapter 2"],
+    "available": false,
+    "genre": "Biography"
+  },
+  {
+    "id": "B002",
+    "title": "Discovery of India",
+    "author": "Jawaharlal Nehru",
+    "cover": "https://images-na.ssl-images-amazon.com/images/I/81j5jbe0CZL.jpg",
+    "description": "Description for Discovery of India by Jawaharlal Nehru.",
+    "index": ["Chapter 1", "Chapter 2"],
+    "available": false,
+    "genre": "History"
+  },
+  {
+    "id": "B003",
+    "title": "My Experiments with Truth",
+    "author": "Mahatma Gandhi",
+    "cover": "https://images-na.ssl-images-amazon.com/images/I/91uCG96XJYL.jpg",
+    "description": "Description for My Experiments with Truth by Mahatma Gandhi.",
+    "index": ["Chapter 1", "Chapter 2"],
+    "available": false,
+    "genre": "Autobiography"
+  },
+  {
+    "id": "B004",
+    "title": "Object Oriented Programming with C++",
+    "author": "E Balagurusamy",
+    "cover": "https://m.media-amazon.com/images/I/51BIl9DYsUL.jpg",
+    "description": "Description for Object Oriented Programming with C++ by E Balagurusamy.",
+    "index": ["Chapter 1", "Chapter 2"],
+    "available": false,
+    "genre": "Education"
+  },
+  {
+    "id": "B005",
+    "title": "Thinking with Type",
+    "author": "Ellen Lupton",
+    "cover": "https://images-na.ssl-images-amazon.com/images/I/81chrfcZz7L.jpg",
+    "description": "Description for Thinking with type by Ellen Lupton.",
+    "index": ["Chapter 1", "Chapter 2"],
+    "available": false,
+    "genre": "Arts"
+  },
+  {
+    "id": "B006",
+    "title": "The Photographer’s",
+    "author": "Lindsay Adler",
+    "cover": "https://images-na.ssl-images-amazon.com/images/I/51MYoPQidUL.jpg",
+    "description": "Description for The Photographer's by Lindsay Adler.",
+    "index": ["Chapter 1", "Chapter 2"],
+    "available": false,
+    "genre": "Photography"
+  }
+]
+
   },
   {
     "bid": 2,
