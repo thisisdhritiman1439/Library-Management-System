@@ -8,7 +8,7 @@ st.set_page_config(page_title="Smart Library", page_icon="📚", layout="wide")
 
 # ---------------------- File paths ----------------------
 USER_FILE = "users.json"
-BOOK_FILE = "books.json"
+BOOK_FILE = "books_data.json"
 ISSUED_FILE = "issued_books.json"
 
 # ---------------------- Safe JSON helpers ----------------------
