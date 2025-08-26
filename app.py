@@ -34,11 +34,165 @@ def safe_load_json(path: str, default):
             bak = f"{path}.backup.{int(time.time())}"
             shutil.move(path, bak)
             safe_save_json(path, default)
-            st.warning(f"Corrupt JSON `{path}` found. Backed up to `{bak}` and recreated default.")
+            st.warning(f"Corrupt JSON `{path}` found — backed up to `{bak}` and recreated default.")
         except Exception:
             safe_save_json(path, default)
             st.warning(f"Corrupt JSON `{path}` detected — recreated default (backup may have failed).")
         return default
+
+# ---------------------- Default 61 books dataset ----------------------
+def get_default_books() -> List[Dict]:
+    # 61 books converted to new format. Covers are mostly public Amazon links (may change over time).
+    # Each book has: id (B001..B061), title, author, cover, description, index (list), available (bool), genre, tags, price optional
+    now = datetime.datetime.utcnow().isoformat()
+    B = []
+    def add(i, title, author, cover, desc, idx_list, genre, available=True, tags=None, price=None):
+        bid = f"B{int(i):03d}"
+        B.append({
+            "id": bid,
+            "title": title,
+            "author": author,
+            "cover": cover or "",
+            "description": desc,
+            "index": idx_list,
+            "available": bool(available),
+            "genre": genre,
+            "tags": tags or [],
+            "price": price,
+            "publisher": None,
+            "isbn": None,
+            "pages": None,
+            "edition": None,
+            "language": None,
+            "rating": 0.0,
+            "reviews": [],
+            "times_issued": 0,
+            "created_at": now
+        })
+    # We'll add the 61 books (some cover links used previously in the conversation; fallbacks may be empty)
+    add(1,  "Steve Jobs", "Walter Isaacson", "https://images-na.ssl-images-amazon.com/images/I/71zF6lUgWwL.jpg",
+        "Biography of Steve Jobs, detailing his life and the founding of Apple.", ["Introduction","Timeline","Chapters"], "Biography", available=False, tags=["biography","technology"])
+    add(2,  "Discovery of India", "Jawaharlal Nehru", "https://images-na.ssl-images-amazon.com/images/I/81j5jbe0CZL.jpg",
+        "Jawaharlal Nehru's reflections on Indian history, culture and identity.", ["Part I","Part II","Part III"], "History", available=False, tags=["history","india"])
+    add(3,  "My Experiments with Truth", "Mahatma Gandhi", "https://images-na.ssl-images-amazon.com/images/I/91uCG96XJYL.jpg",
+        "Autobiography of Mahatma Gandhi covering his personal experiments and philosophy.", ["Early Life","South Africa","Return to India"], "Autobiography", available=False, tags=["autobiography","india"])
+    add(4,  "Object Oriented Programming with C++", "E Balagurusamy", "https://m.media-amazon.com/images/I/51BIl9DYsUL.jpg",
+        "Introductory textbook on C++ and object oriented concepts.", ["Basics","Classes & Objects","Advanced Topics"], "Education", available=False, tags=["programming","c++"])
+    add(5,  "Thinking with Type", "Ellen Lupton", "https://images-na.ssl-images-amazon.com/images/I/81chrfcZz7L.jpg",
+        "A guide to typography and visual communication.", ["Principles","Type Anatomy","Applications"], "Arts", available=False, tags=["design","typography"])
+    add(6,  "The Photographer's", "Lindsay Adler", "https://images-na.ssl-images-amazon.com/images/I/51MYoPQidUL.jpg",
+        "Techniques and guidance for portrait and fashion photography.", ["Lighting","Posing","Editing"], "Photography", available=False, tags=["photography"])
+    add(7,  "Think and Grow", "Napoleon Hill", "https://images-na.ssl-images-amazon.com/images/I/81s6DUyQCZL.jpg",
+        "Personal development and success principles.", ["Mindset","Habits","Wealth"], "Economics", available=False, tags=["self-help","success"])
+    add(8,  "The Fifth Discipline : The Art", "Peter M.Senge", "https://m.media-amazon.com/images/I/81b0C2YNSrL.jpg",
+        "Systems thinking and learning organizations.", ["Systems","Leadership","Practice"], "Management", available=False, tags=["management"])
+    add(9,  "A Theory of Justice", "John Rawls", "https://images-na.ssl-images-amazon.com/images/I/81OthjkJBuL.jpg",
+        "Philosophical exposition of justice as fairness.", ["Foundations","Principles","Applications"], "Law", available=False, tags=["philosophy","political"])
+    add(10, "Eat to Live", "Joel Fuhrman", "https://m.media-amazon.com/images/I/81gepf1eMqL.jpg",
+        "Nutrition guide promoting nutrient rich eating for health and weight loss.", ["Nutrition","Recipes","Plans"], "Health", available=False, tags=["health","nutrition"])
+    add(11, "City of Heavenly Fire", "Cassandra Clare", "https://m.media-amazon.com/images/I/91b0C2YNSrL.jpg",
+        "Fiction — young adult fantasy with Shadowhunters.", ["Prologue","Battles","Aftermath"], "Fiction", available=True, tags=["fantasy"])
+    add(12, "Da Vinci Code", "Dan Brown", "https://m.media-amazon.com/images/I/71K6XJrGZOL.jpg",
+        "A fast-paced thriller mixing art, history and conspiracy.", ["Prologue","The Puzzle","The Chase"], "Fiction", available=True, tags=["thriller"])
+    add(13, "War and Peace", "Leo Tolstoy", "https://m.media-amazon.com/images/I/81s6DUyQCZL.jpg",
+        "Epic novel of Russia during the Napoleonic era.", ["Book I","Book II","Book III"], "Philosophical fiction", available=False, tags=["classic","historical"])
+    add(14, "Python For All", "John Shovic", "https://m.media-amazon.com/images/I/51K8ouYrHeL._SX379_BO1,204,203,200_.jpg",
+        "Introductory Python text with hands-on examples.", ["Basics","Data Structures","Projects"], "Education", available=True, tags=["python"])
+    add(15, "Automate The Boring Stuff With Python", "Al Sweigart", "https://m.media-amazon.com/images/I/81t2CVWEsUL.jpg",
+        "Practical automation tasks using Python.", ["Automating Tasks","Web Scraping","Excel"], "Education", available=True, tags=["python","automation"])
+    add(16, "Wings Of Fire", "APJ Abdul Kalam", "https://m.media-amazon.com/images/I/81xXAy8pM1L.jpg",
+        "Autobiography of A.P.J. Abdul Kalam describing his journey.", ["Early Life","Career","Vision"], "Autobiography", available=True, tags=["india","autobiography"])
+    add(17, "Ikigai", "Hector Garcia", "https://m.media-amazon.com/images/I/81kR0V4Es6L.jpg",
+        "Japanese concept about finding purpose and longevity.", ["Principles","Practices","Stories"], "Personal Development", available=True, tags=["self-help"])
+    add(18, "Who Will Cry When You Will Die", "Robin Sharma", "https://m.media-amazon.com/images/I/81KXf2r4qOL.jpg",
+        "Short life lessons and personal growth ideas.", ["Lessons","Practices"], "Personal Development", available=True, tags=["self-help"])
+    add(19, "Rich Dad Poor Dad", "Robert T. Kiyosaki", "https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg",
+        "Personal finance and investing fundamentals.", ["Foundations","Assets","Mindset"], "Business", available=True, tags=["finance"])
+    add(20, "Immortals of Meluha", "Amish Tripathi", "https://m.media-amazon.com/images/I/81cLw4kPOeL.jpg",
+        "A mythological fantasy set in ancient India.", ["Origins","Conflict","Resolution"], "High Fantasy", available=True, tags=["fantasy","myth"])
+    add(21, "A Brief History Of Time", "Stephen Hawking", "https://m.media-amazon.com/images/I/71yX3Z8wJEL.jpg",
+        "Accessible cosmology and the physics of the universe.", ["Big Bang","Black Holes","Time"], "Science", available=False, tags=["science","physics"])
+    add(22, "I Know Why The Caged Bird Sings", "Maya Angelou", "https://m.media-amazon.com/images/I/81uG1JZJ8xL.jpg",
+        "Autobiographical work exploring identity and resilience.", ["Childhood","Voice","Triumph"], "Story", available=True, tags=["autobiography"])
+    add(23, "Lord Of Flies", "William Golding", "https://m.media-amazon.com/images/I/71g2ednj0JL.jpg",
+        "Novel about boys stranded on an island and the collapse of order.", ["Arrival","Conflict","Aftermath"], "Fiction", available=False, tags=["classic"])
+    add(24, "Lorna Doone", "R. D. Blackmore", "https://m.media-amazon.com/images/I/71bG3r8qvPL.jpg",
+        "Romantic historical novel set in Exmoor.", ["Love","Strife","Resolution"], "Fiction", available=False, tags=["classic"])
+    add(25, "Jamaica Inn", "Daphne du Maurier", "https://m.media-amazon.com/images/I/81m6aQwUVAL.jpg",
+        "A Gothic novel of smuggling and suspense.", ["Arrival","Mysteries","Confrontation"], "Fiction", available=False, tags=["gothic"])
+    add(26, "Kidnapped", "Robert Louis Stevenson", "https://m.media-amazon.com/images/I/81gUQ5xnCkL.jpg",
+        "Adventure novel of young David Balfour in Scotland.", ["Kidnapping","Journey","Home"], "Fiction", available=True, tags=["adventure"])
+    add(27, "Treasure Island", "Robert Louis Stevenson", "https://m.media-amazon.com/images/I/81gUQ5xnCkL.jpg",
+        "Classic pirate adventure with Long John Silver.", ["Map","Voyage","Treasure"], "Fiction", available=True, tags=["adventure"])
+    add(28, "The Call Of The Wild", "Jack London", "https://m.media-amazon.com/images/I/81zj3j2IgaL.jpg",
+        "The tale of Buck, a dog who returns to his wild instincts.", ["Kidnapped","Trail","Freedom"], "Fiction", available=True, tags=["adventure"])
+    add(29, "Charlotte's Web", "E. B. White", "https://m.media-amazon.com/images/I/81OthjkJBuL.jpg",
+        "Children's story of friendship between Wilbur and Charlotte.", ["Friendship","Courage","Legacy"], "Fiction", available=True, tags=["children"])
+    add(30, "The Wind In The Willows", "Kenneth Grahame", "https://m.media-amazon.com/images/I/81t2CVWEsUL.jpg",
+        "Whimsical tales of Mole, Rat, Toad and Badger.", ["River","Adventure","Home"], "Fiction", available=True, tags=["children"])
+    add(31, "Being and Time", "Martin Heidegger", "https://m.media-amazon.com/images/I/81cLw4kPOeL.jpg",
+        "Philosophical work exploring being and existence.", ["Existence","Time","Care"], "Philosophy", available=True, tags=["philosophy"])
+    add(32, "The Republic", "Plato", "https://m.media-amazon.com/images/I/81dE3XoqoFL.jpg",
+        "Dialogues on justice, politics and the ideal state.", ["Justice","Education","State"], "Philosophy", available=False, tags=["philosophy"])
+    add(33, "Critique of Pure Reason", "Immanuel Kant", "https://m.media-amazon.com/images/I/81trR8LrYjL.jpg",
+        "Foundational work of modern philosophy on cognition and reason.", ["Aesthetic","Understanding","Reason"], "Philosophy", available=True, tags=["philosophy"])
+    add(34, "The Prince", "Niccolò Machiavelli", "https://m.media-amazon.com/images/I/81hLzKg4ZDL.jpg",
+        "Treatise on political power and rule.", ["Power","Strategy","Ruler"], "Philosophy", available=True, tags=["political"])
+    add(35, "Ethics", "Stuart Hampshire", "https://m.media-amazon.com/images/I/81U0a5yR0nL.jpg",
+        "A collection exploring moral philosophy.", ["Moral Questions","Action","Responsibility"], "Philosophy", available=True, tags=["ethics"])
+    add(36, "Long Walk To Freedom", "Nelson Mandela", "https://m.media-amazon.com/images/I/91uCG96XJYL.jpg",
+        "Autobiography of Nelson Mandela and the struggle against apartheid.", ["Early Life","Activism","Presidency"], "Autobiography", available=True, tags=["history","autobiography"])
+    add(37, "The Diary of a Young Girl", "Anne Frank", "https://m.media-amazon.com/images/I/81ySO5Z0j2L.jpg",
+        "Anne Frank's wartime diary recording daily life in hiding.", ["Diary","Hope","Legacy"], "Autobiography", available=True, tags=["history"])
+    add(38, "Mark Twain (selected)", "Mark Twain", "https://m.media-amazon.com/images/I/81x9V4Xj5mL.jpg",
+        "Selections from Mark Twain's works.", ["Sketches","Stories"], "Autobiography", available=True, tags=["classic"])
+    add(39, "Mein Kampf (historical)", "Adolf Hitler", "", 
+        "Historical text (sensitive) — included for completeness; handle with care. Consider removing for public deployments.", ["Part 1","Part 2"], "Historical", available=True, tags=["history"])
+    add(40, "Freakonomics", "Steven D. Levitt & Stephen J. Dubner", "https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg",
+        "Popular economics looking at incentives and unexpected correlations.", ["Incentives","Case Studies"], "Economics", available=False, tags=["economics"])
+    add(41, "Thinking, Fast and Slow", "Daniel Kahneman", "https://m.media-amazon.com/images/I/81a4kCNuH+L.jpg",
+        "Cognitive biases, heuristics and two systems of thought.", ["System 1","System 2"], "Economics", available=True, tags=["psychology"])
+    add(42, "How Nations Fail (excerpt)", "Daron Acemoglu & James A. Robinson", "https://m.media-amazon.com/images/I/81r5z4NOpzL.jpg",
+        "Why nations succeed or fail — institutions and politics.", ["Institutions","Case Studies"], "Economics", available=True, tags=["political"])
+    add(43, "Animal Spirits", "George A. Akerlof & Robert J. Shiller", "https://m.media-amazon.com/images/I/81m6aQwUVAL.jpg",
+        "Behavioral economics and the role of psychology in markets.", ["Confidence","Narrative"], "Economics", available=True, tags=["economics"])
+    add(44, "The Black Swan", "Nassim Nicholas Taleb", "https://m.media-amazon.com/images/I/81p2bYd0KDL.jpg",
+        "On rare events, unpredictability, and robustness.", ["Rare Events","Risk"], "Economics", available=False, tags=["economics"])
+    add(45, "1984", "George Orwell", "https://m.media-amazon.com/images/I/71kxa1-0mfL.jpg",
+        "Dystopian novel about surveillance and totalitarianism.", ["Big Brother","Resistance","Aftermath"], "Story", available=True, tags=["dystopia"])
+    add(46, "The Lord of the Rings", "J.R.R. Tolkien", "https://m.media-amazon.com/images/I/91zbi9M+mKL.jpg",
+        "Epic fantasy trilogy about the One Ring and the fight against Sauron.", ["Fellowship","Two Towers","Return of the King"], "Story", available=False, tags=["fantasy"])
+    add(47, "Kite Runner", "Khaled Hosseini", "https://m.media-amazon.com/images/I/81OthjkJBuL.jpg",
+        "A story of friendship, betrayal and redemption set against Afghanistan's turbulent history.", ["Childhood","Betrayal","Return"], "Story", available=True, tags=["fiction"])
+    add(48, "Harry Potter and the Sorcerer's Stone", "J.K. Rowling", "https://m.media-amazon.com/images/I/81iqZ2HHD-L.jpg",
+        "The first Harry Potter book introducing Hogwarts and magic.", ["The Boy Who Lived","Hogwarts","The Mirror"], "Story", available=True, tags=["fantasy","young-adult"])
+    add(49, "The Book Thief", "Markus Zusak", "https://m.media-amazon.com/images/I/81OthjkJBuL.jpg",
+        "A story about a girl in Nazi Germany who steals books and shares them.", ["Books","War","Loss"], "Story", available=True, tags=["historical"])
+    add(50, "A History of the 20th Century", "Martin Gilbert", "https://m.media-amazon.com/images/I/81nR8hLgAqL.jpg",
+        "A survey of major events shaping the 20th century.", ["Wars","Politics","Society"], "History", available=True, tags=["history"])
+    add(51, "Guns, Germs, and Steel", "Jared Diamond", "https://m.media-amazon.com/images/I/81v3w7h2ckL.jpg",
+        "An analysis of societal development shaped by environment and resources.", ["Geography","Agriculture","Technology"], "History", available=False, tags=["history"])
+    add(52, "A World Lit Only by Fire", "William Manchester", "https://m.media-amazon.com/images/I/81U0a5yR0nL.jpg",
+        "A popular history of the Middle Ages and early modern Europe.", ["Dark Ages","Expansion"], "History", available=False, tags=["history"])
+    add(53, "The Crusades", "Thomas Asbridge", "https://m.media-amazon.com/images/I/81xK4nwl8zL.jpg",
+        "History of the medieval Crusades.", ["Origins","Campaigns","Impact"], "History", available=True, tags=["history"])
+    add(54, "Over the Edge of the World", "Laurence Bergreen", "https://m.media-amazon.com/images/I/81STa7K8UvL.jpg",
+        "Voyage of Magellan and the first circumnavigation.", ["Voyage","Challenges","Legacy"], "History", available=True, tags=["history","exploration"])
+    add(55, "A Beautiful Mind", "Sylvia Nasar", "https://m.media-amazon.com/images/I/91ySO5Z0j2L.jpg",
+        "Biography of John Nash and his work in game theory.", ["Early Life","Math","Struggles"], "Biography", available=True, tags=["biography"])
+    add(56, "The Enigma", "Andrew Hodges", "https://m.media-amazon.com/images/I/91tL-4Qh5qL.jpg",
+        "Biography of Alan Turing and the birth of computer science.", ["Turing","War","Legacy"], "Biography", available=True, tags=["biography","computing"])
+    add(57, "Alexander Hamilton", "Ron Chernow", "https://m.media-amazon.com/images/I/91b0C2YNSrL.jpg",
+        "Biography of American Founding Father Alexander Hamilton.", ["Early Life","Politics","Legacy"], "Biography", available=True, tags=["biography","history"])
+    add(58, "Barracoon", "Zora Neale Hurston", "https://m.media-amazon.com/images/I/81kR0V4Es6L.jpg",
+        "First-hand account of formerly enslaved people in America.", ["Interviews","Stories"], "Biography", available=True, tags=["history"])
+    add(59, "Churchill: A Life", "Martin Gilbert", "https://m.media-amazon.com/images/I/81Q1Z9sKcRL.jpg",
+        "Biography of Winston Churchill and his role in the 20th century.", ["Early Life","WWII","Politics"], "Biography", available=True, tags=["biography","history"])
+    add(60, "A Tale of Two Cities", "Charles Dickens", "https://m.media-amazon.com/images/I/81nR8hLgAqL.jpg",
+        "Classic novel set during the French Revolution.", ["Recalled to Life","The Golden Thread","The Storm"], "Historical novel", available=False, tags=["classic"])
+    add(61, "Les Misérables", "Victor Hugo", "https://m.media-amazon.com/images/I/91RYWwPjYyL.jpg",
+        "Epic novel of justice, love and revolution in 19th-century France.", ["Jean Valjean","Cosette","Barricades"], "Historical fiction", available=True, tags=["classic"])
+    return B
 
 # ---------------------- Initialize sample data ----------------------
 def create_sample_data_if_missing():
@@ -48,7 +202,6 @@ def create_sample_data_if_missing():
 
     changed = False
     if not users:
-        # sample librarian: email librarian@example.com / password admin123
         admin = {
             "name": "Admin Librarian",
             "mobile": "9999999999",
@@ -63,50 +216,9 @@ def create_sample_data_if_missing():
         changed = True
 
     if not books:
-        sample_books = [
-            {
-                "id": "B001",
-                "title": "Python for Data Analysis",
-                "author": "Wes McKinney",
-                "cover": "https://m.media-amazon.com/images/I/51K8ouYrHeL._SX379_BO1,204,203,200_.jpg",
-                "description": "Practical introduction to data analysis in Python using pandas and NumPy.",
-                "index": "Ch1: Python basics\nCh2: Data structures\nCh3: pandas essentials\nCh4: Time series",
-                "tags": ["python","data","pandas"],
-                "price": 599.0,
-                "publisher": "O'Reilly",
-                "isbn": "9781491957660",
-                "pages": "550",
-                "edition": "2nd",
-                "language": "English",
-                "rating": 4.4,
-                "reviews": [],
-                "available": True,
-                "times_issued": 0,
-                "created_at": datetime.datetime.utcnow().isoformat()
-            },
-            {
-                "id": "B002",
-                "title": "Introduction to Algorithms",
-                "author": "Cormen et al.",
-                "cover": "https://images-na.ssl-images-amazon.com/images/I/41as+WafrFL._SX258_BO1,204,203,200_.jpg",
-                "description": "Comprehensive algorithms textbook.",
-                "index": "Ch1: Foundations\nCh2: Sorting\nCh3: Graph algorithms\nCh4: Dynamic Programming",
-                "tags": ["algorithms","cs"],
-                "price": 899.0,
-                "publisher": "MIT Press",
-                "isbn": "9780262033848",
-                "pages": "1312",
-                "edition": "3rd",
-                "language": "English",
-                "rating": 4.6,
-                "reviews": [],
-                "available": True,
-                "times_issued": 0,
-                "created_at": datetime.datetime.utcnow().isoformat()
-            }
-        ]
-        safe_save_json(BOOK_FILE, sample_books)
-        st.info("Sample books added.")
+        default_books = get_default_books()
+        safe_save_json(BOOK_FILE, default_books)
+        st.info("Default books added to books_data.json.")
         changed = True
 
     if not issued:
@@ -191,7 +303,7 @@ def add_book(book_id, title, author, cover, description, index_text, tags: List[
         "author": author,
         "cover": cover,
         "description": description,
-        "index": index_text,
+        "index": index_text if isinstance(index_text, list) else (index_text.split("\n") if index_text else []),
         "tags": tags,
         "price": price,
         "publisher": publisher,
@@ -213,6 +325,9 @@ def edit_book(book_id, **fields):
     books = load_books()
     for i,b in enumerate(books):
         if b.get("id") == book_id:
+            # if index provided, ensure it's a list
+            if "index" in fields and not isinstance(fields["index"], list):
+                fields["index"] = fields["index"].split("\n")
             b.update(fields)
             books[i] = b
             save_books(books)
@@ -348,7 +463,10 @@ def recommend_for_user(user_email: str, top_n=6):
 # ---------------------- Presentation helpers ----------------------
 def safe_image(url, width=150):
     try:
-        st.image(url, width=width)
+        if url:
+            st.image(url, width=width)
+        else:
+            st.image("https://via.placeholder.com/150x220.png?text=No+Cover", width=width)
     except Exception:
         st.image("https://via.placeholder.com/150x220.png?text=No+Cover", width=width)
 
@@ -386,18 +504,18 @@ def book_card(book: dict, user=None):
         if c1.button("View Details", key=f"detail_{book['id']}"):
             st.session_state.page = "book_detail"
             st.session_state.book_id = book["id"]
-            st.rerun()
+            st.experimental_rerun()
         if user:
             if book.get("id") in user.get("favorites", []):
                 if c2.button("★ Favorited", key=f"favrem_{book['id']}"):
                     remove_favorite(user["email"], book["id"])
                     st.session_state.user = find_user_by_email(user["email"])
-                    st.rerun()
+                    st.experimental_rerun()
             else:
                 if c2.button("☆ Add to List", key=f"favadd_{book['id']}"):
                     add_favorite(user["email"], book["id"])
                     st.session_state.user = find_user_by_email(user["email"])
-                    st.rerun()
+                    st.experimental_rerun()
             if user.get("role") != "Librarian":
                 if book.get("available", True):
                     if c3.button("📚 Issue Book", key=f"issue_{book['id']}"):
@@ -406,19 +524,19 @@ def book_card(book: dict, user=None):
                             st.success(f"Issued — due {resp.get('deadline')}")
                         else:
                             st.error(resp)
-                        st.rerun()
+                        st.experimental_rerun()
             else:
                 if c3.button("✏ Edit", key=f"edit_{book['id']}"):
                     st.session_state.edit_book_id = book["id"]
-                    st.session_state.page = "librarian_edit"
-                    st.rerun()
+                    st.session_state.page = "Librarian Console"
+                    st.experimental_rerun()
                 if c4.button("🗑 Delete", key=f"del_{book['id']}"):
                     ok,msg = delete_book(book["id"])
                     if ok:
                         st.success(msg)
                     else:
                         st.error(msg)
-                    st.rerun()
+                    st.experimental_rerun()
         else:
             c2.info("Login to issue / save")
     st.write("---")
@@ -460,7 +578,7 @@ if st.session_state.user:
     if st.sidebar.button("Logout"):
         st.session_state.user = None
         st.session_state.page = "Home"
-        st.rerun()
+        st.experimental_rerun()
 
 # ---------------------- Pages ----------------------
 def page_home():
@@ -473,7 +591,7 @@ def page_home():
         avail_filter = st.selectbox("Availability", ["All","Available only","Checked out only"])
     filtered = []
     for b in books:
-        text = " ".join([str(b.get(k,"")).lower() for k in ("title","author","id")]) + " " + " ".join([t.lower() for t in b.get("tags",[])])
+        text = " ".join([str(b.get(k,"")).lower() for k in ("title","author","id")]) + " " + " ".join([t.lower() for t in b.get("tags",[])] + [b.get("genre","").lower()])
         if q and q.strip().lower() not in text:
             continue
         if avail_filter == "Available only" and not b.get("available",True):
@@ -486,6 +604,13 @@ def page_home():
         book_card(b, st.session_state.user)
 
 def page_login():
+    # If already logged in, redirect to Home
+    if st.session_state.user:
+        st.info("Already logged in — redirected to Home.")
+        st.session_state.page = "Home"
+        st.experimental_rerun()
+        return
+
     st.subheader("Login")
     with st.form("login_form"):
         email = st.text_input("Email")
@@ -497,11 +622,18 @@ def page_login():
                 st.session_state.user = resp
                 st.session_state.page = "Home"
                 st.success(f"Welcome back, {resp.get('name')} — redirected to Home.")
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error(resp)
 
 def page_signup():
+    # If already logged in, redirect to Home
+    if st.session_state.user:
+        st.info("Already logged in — redirected to Home.")
+        st.session_state.page = "Home"
+        st.experimental_rerun()
+        return
+
     st.subheader("Create account")
     with st.form("signup_form"):
         name = st.text_input("Full name")
@@ -516,7 +648,7 @@ def page_signup():
                 st.session_state.user = resp
                 st.session_state.page = "Home"
                 st.success("Account created and logged in — redirected to Home.")
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error(resp)
 
@@ -571,7 +703,7 @@ def page_my_issued():
                 ok,msg = return_book(rec.get('record_id'), st.session_state.user.get("email"))
                 if ok:
                     st.success(msg)
-                    st.rerun()
+                    st.experimental_rerun()
                 else:
                     st.error(msg)
 
@@ -607,12 +739,12 @@ def page_book_detail():
                 if st.button("★ Favorited (Remove)"):
                     remove_favorite(st.session_state.user.get("email"), book.get("id"))
                     st.session_state.user = find_user_by_email(st.session_state.user.get("email"))
-                    st.rerun()
+                    st.experimental_rerun()
             else:
                 if st.button("☆ Add to Book List"):
                     add_favorite(st.session_state.user.get("email"), book.get("id"))
                     st.session_state.user = find_user_by_email(st.session_state.user.get("email"))
-                    st.rerun()
+                    st.experimental_rerun()
             if st.session_state.user.get("role") != "Librarian":
                 if book.get("available", True):
                     if st.button("📚 Issue This Book"):
@@ -621,12 +753,12 @@ def page_book_detail():
                             st.success(f"Issued — due {resp.get('deadline')}")
                         else:
                             st.error(resp)
-                        st.rerun()
+                        st.experimental_rerun()
             else:
                 if st.button("✏ Edit Book (Console)"):
                     st.session_state.edit_book_id = book.get("id")
                     st.session_state.page = "Librarian Console"
-                    st.rerun()
+                    st.experimental_rerun()
     with right:
         st.markdown(f"## {book.get('title')}")
         st.markdown(f"**Author:** {book.get('author','-')}")
@@ -642,7 +774,12 @@ def page_book_detail():
         st.subheader("Description")
         st.write(book.get("description","_No description provided._"))
         st.subheader("Index / Overview")
-        st.write(book.get("index","_No index provided._"))
+        idx = book.get("index", [])
+        if isinstance(idx, list):
+            for it in idx:
+                st.write(f"- {it}")
+        else:
+            st.write(idx)
         st.write("---")
         st.subheader("Reviews")
         if book.get("reviews"):
@@ -688,12 +825,12 @@ def page_librarian_console():
             tags = st.text_input("Tags (comma separated)")
             rating = st.number_input("Rating (0-5)", min_value=0.0, max_value=5.0, value=0.0, step=0.1)
             description = st.text_area("Short Description")
-            index_text = st.text_area("Index / Overview")
+            index_text = st.text_area("Index / Overview (one per line)")
             submitted = st.form_submit_button("Add Book")
             if submitted:
                 tag_list = [t.strip() for t in tags.split(",") if t.strip()]
                 price_val = float(price) if price.strip() else None
-                ok,msg = add_book(book_id.strip(), title.strip(), author.strip(), cover.strip(), description.strip(), index_text.strip(), tag_list,
+                ok,msg = add_book(book_id.strip(), title.strip(), author.strip(), cover.strip(), description.strip(), index_text.strip().splitlines(), tag_list,
                                  price=price_val, publisher=publisher.strip() or None, isbn=isbn.strip() or None, pages=pages.strip() or None,
                                  edition=edition.strip() or None, language=language.strip() or None, rating=rating)
                 if ok:
@@ -723,7 +860,7 @@ def page_librarian_console():
                 tags = st.text_input("Tags (comma separated)", value=",".join(book.get("tags",[])))
                 rating = st.number_input("Rating (0-5)", min_value=0.0, max_value=5.0, value=float(book.get("rating",0.0)), step=0.1)
                 description = st.text_area("Description", value=book.get("description",""))
-                index_text = st.text_area("Index / Overview", value=book.get("index",""))
+                index_text = st.text_area("Index / Overview (one per line)", value="\n".join(book.get("index",[])))
                 submitted = st.form_submit_button("Save Changes")
                 if submitted:
                     tag_list = [t.strip() for t in tags.split(",") if t.strip()]
@@ -732,7 +869,7 @@ def page_librarian_console():
                                        price=price_val, publisher=publisher.strip() or None, isbn=isbn.strip() or None,
                                        pages=pages.strip() or None, edition=edition.strip() or None,
                                        language=language.strip() or None, tags=tag_list,
-                                       rating=rating, description=description.strip(), index=index_text.strip())
+                                       rating=rating, description=description.strip(), index=index_text.strip().splitlines())
                     if ok:
                         st.success(msg)
                     else:
@@ -751,7 +888,7 @@ def page_librarian_console():
                 ok,msg = return_book(rec.get('record_id'))
                 if ok:
                     st.success("Returned")
-                    st.rerun()
+                    st.experimental_rerun()
                 else:
                     st.error(msg)
 
