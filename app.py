@@ -1,27 +1,23 @@
 # app.py
 import streamlit as st
 from pathlib import Path
-import json, hashlib, datetime, uuid, os, shutil, time
+import json, hashlib, datetime, uuid, shutil, time
 from typing import List, Dict
 
 st.set_page_config(page_title="Smart Library", page_icon="📚", layout="wide")
 
-# -------------------- File paths --------------------
+# ---------------------- File paths ----------------------
 USER_FILE = "users.json"
 BOOK_FILE = "books.json"
 ISSUED_FILE = "issued_books.json"
 
-# -------------------- Safe JSON helpers --------------------
+# ---------------------- Safe JSON helpers ----------------------
 def safe_save_json(path: str, data):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 def safe_load_json(path: str, default):
-    """
-    Load JSON from path. If file missing or empty or corrupt, create file with default and return default.
-    If corrupt, back up the original file to path + .backup.TIMESTAMP
-    """
     p = Path(path)
     if not p.exists():
         safe_save_json(path, default)
@@ -29,34 +25,31 @@ def safe_load_json(path: str, default):
     try:
         text = p.read_text(encoding="utf-8").strip()
         if text == "":
-            # empty file -> write default
             safe_save_json(path, default)
             return default
         return json.loads(text)
-    except (json.JSONDecodeError, ValueError) as e:
-        # backup corrupt file
+    except (json.JSONDecodeError, ValueError):
+        # backup corrupted file
         try:
             bak = f"{path}.backup.{int(time.time())}"
             shutil.move(path, bak)
-            # write clean file
             safe_save_json(path, default)
-            st.warning(f"Found corrupt JSON at `{path}`. Backed up to `{bak}` and recreated default file.")
+            st.warning(f"Corrupt JSON `{path}` found. Backed up to `{bak}` and recreated default.")
         except Exception:
-            # if backup fails, still try to recreate file
             safe_save_json(path, default)
-            st.warning(f"Found corrupt JSON at `{path}`. Recreated default file (backup failed).")
+            st.warning(f"Corrupt JSON `{path}` detected — recreated default (backup may have failed).")
         return default
 
-# -------------------- Init files & sample data --------------------
+# ---------------------- Initialize sample data ----------------------
 def create_sample_data_if_missing():
     users = safe_load_json(USER_FILE, [])
     books = safe_load_json(BOOK_FILE, [])
     issued = safe_load_json(ISSUED_FILE, [])
 
-    created = False
+    changed = False
     if not users:
-        # create a sample librarian (email: librarian@example.com, password: admin123)
-        sample_admin = {
+        # sample librarian: email librarian@example.com / password admin123
+        admin = {
             "name": "Admin Librarian",
             "mobile": "9999999999",
             "email": "librarian@example.com",
@@ -65,10 +58,9 @@ def create_sample_data_if_missing():
             "favorites": [],
             "created_at": datetime.datetime.utcnow().isoformat()
         }
-        users = [sample_admin]
-        safe_save_json(USER_FILE, users)
-        st.info("Sample librarian created: email `librarian@example.com`, password `admin123` (change after login).")
-        created = True
+        safe_save_json(USER_FILE, [admin])
+        st.info("Sample librarian created: email `librarian@example.com`, password `admin123`. Change it after login.")
+        changed = True
 
     if not books:
         sample_books = [
@@ -77,9 +69,9 @@ def create_sample_data_if_missing():
                 "title": "Python for Data Analysis",
                 "author": "Wes McKinney",
                 "cover": "https://m.media-amazon.com/images/I/51K8ouYrHeL._SX379_BO1,204,203,200_.jpg",
-                "description": "Hands-on guide to data analysis in Python using pandas and NumPy.",
+                "description": "Practical introduction to data analysis in Python using pandas and NumPy.",
                 "index": "Ch1: Python basics\nCh2: Data structures\nCh3: pandas essentials\nCh4: Time series",
-                "tags": ["python", "data", "pandas"],
+                "tags": ["python","data","pandas"],
                 "price": 599.0,
                 "publisher": "O'Reilly",
                 "isbn": "9781491957660",
@@ -95,11 +87,11 @@ def create_sample_data_if_missing():
             {
                 "id": "B002",
                 "title": "Introduction to Algorithms",
-                "author": "Cormen, Leiserson, Rivest, Stein",
+                "author": "Cormen et al.",
                 "cover": "https://images-na.ssl-images-amazon.com/images/I/41as+WafrFL._SX258_BO1,204,203,200_.jpg",
-                "description": "Comprehensive textbook on algorithms.",
+                "description": "Comprehensive algorithms textbook.",
                 "index": "Ch1: Foundations\nCh2: Sorting\nCh3: Graph algorithms\nCh4: Dynamic Programming",
-                "tags": ["algorithms", "cs"],
+                "tags": ["algorithms","cs"],
                 "price": 899.0,
                 "publisher": "MIT Press",
                 "isbn": "9780262033848",
@@ -114,29 +106,29 @@ def create_sample_data_if_missing():
             }
         ]
         safe_save_json(BOOK_FILE, sample_books)
-        st.info("Sample books added to books.json.")
-        created = True
+        st.info("Sample books added.")
+        changed = True
 
     if not issued:
         safe_save_json(ISSUED_FILE, [])
-        created = True
+        changed = True
 
-    return created
+    return changed
 
-# Ensure files exist and create sample data if empty
+# Ensure default files exist and sample data is present
 safe_load_json(USER_FILE, [])
 safe_load_json(BOOK_FILE, [])
 safe_load_json(ISSUED_FILE, [])
 create_sample_data_if_missing()
 
-# -------------------- Utility functions --------------------
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+# ---------------------- Utility functions ----------------------
+def hash_password(pw: str) -> str:
+    return hashlib.sha256(pw.encode()).hexdigest()
 
 def find_user_by_email(email: str):
     users = safe_load_json(USER_FILE, [])
     for u in users:
-        if u.get("email","").lower() == email.lower():
+        if u.get("email","").lower() == (email or "").lower():
             return u
     return None
 
@@ -147,18 +139,17 @@ def update_user_in_file(user_obj: dict):
             users[i] = user_obj
             safe_save_json(USER_FILE, users)
             return True
-    # not found -> append
     users.append(user_obj)
     safe_save_json(USER_FILE, users)
     return True
 
-# -------------------- Business logic --------------------
+# ---------------------- Business logic ----------------------
 def signup(name, mobile, email, password, role):
     if not (name and email and password):
         return False, "Name, email and password are required."
     if find_user_by_email(email):
         return False, "Email already registered."
-    user = {
+    u = {
         "name": name.strip(),
         "mobile": mobile.strip(),
         "email": email.strip().lower(),
@@ -168,9 +159,9 @@ def signup(name, mobile, email, password, role):
         "created_at": datetime.datetime.utcnow().isoformat()
     }
     users = safe_load_json(USER_FILE, [])
-    users.append(user)
+    users.append(u)
     safe_save_json(USER_FILE, users)
-    return True, user
+    return True, u
 
 def login(email, password):
     if not (email and password):
@@ -182,19 +173,19 @@ def login(email, password):
         return False, "Incorrect password."
     return True, u
 
-# Book CRUD
+# Books
 def load_books() -> List[Dict]:
     return safe_load_json(BOOK_FILE, [])
 
 def save_books(books: List[Dict]):
     safe_save_json(BOOK_FILE, books)
 
-def add_book(book_id, title, author, cover, description, index_text, tags: List[str],
-             price=None, publisher=None, isbn=None, pages=None, edition=None, language=None, rating=None):
+def add_book(book_id, title, author, cover, description, index_text, tags: List[str], price=None,
+             publisher=None, isbn=None, pages=None, edition=None, language=None, rating=None):
     books = load_books()
-    if any(b.get("id") == book_id for b in books):
+    if any(b.get("id")==book_id for b in books):
         return False, "Book ID already exists."
-    b = {
+    book = {
         "id": book_id,
         "title": title,
         "author": author,
@@ -214,7 +205,7 @@ def add_book(book_id, title, author, cover, description, index_text, tags: List[
         "times_issued": 0,
         "created_at": datetime.datetime.utcnow().isoformat()
     }
-    books.append(b)
+    books.append(book)
     save_books(books)
     return True, "Book added."
 
@@ -234,7 +225,6 @@ def delete_book(book_id):
     if len(new_books) == len(books):
         return False, "Book not found."
     save_books(new_books)
-    # remove issued records for this book and remove from users' favorites
     issued = safe_load_json(ISSUED_FILE, [])
     issued = [r for r in issued if r.get("book_id") != book_id]
     safe_save_json(ISSUED_FILE, issued)
@@ -248,12 +238,12 @@ def delete_book(book_id):
         safe_save_json(USER_FILE, users)
     return True, "Book deleted and references cleaned."
 
-# Issue / Return
+# Issue/Return
 DEFAULT_LOAN_DAYS = 14
 
 def issue_book(book_id, user_email, days=DEFAULT_LOAN_DAYS):
     books = load_books()
-    book = next((b for b in books if b.get("id") == book_id), None)
+    book = next((b for b in books if b.get("id")==book_id), None)
     if not book:
         return False, "Book not found."
     if not book.get("available", True):
@@ -268,7 +258,7 @@ def issue_book(book_id, user_email, days=DEFAULT_LOAN_DAYS):
     issued = safe_load_json(ISSUED_FILE, [])
     issued.append(rec)
     safe_save_json(ISSUED_FILE, issued)
-    # mark book unavailable + increment
+    # mark not available and increment
     book["available"] = False
     book["times_issued"] = book.get("times_issued", 0) + 1
     save_books(books)
@@ -276,12 +266,11 @@ def issue_book(book_id, user_email, days=DEFAULT_LOAN_DAYS):
 
 def return_book(record_id, user_email=None):
     issued = safe_load_json(ISSUED_FILE, [])
-    rec = next((r for r in issued if r.get("record_id") == record_id), None)
+    rec = next((r for r in issued if r.get("record_id")==record_id), None)
     if not rec:
         return False, "Issue record not found."
     if user_email and rec.get("user_email","").lower() != user_email.lower():
         return False, "You are not the borrower for this record."
-    # mark book available
     books = load_books()
     for b in books:
         if b.get("id") == rec.get("book_id"):
@@ -319,22 +308,19 @@ def remove_favorite(user_email, book_id):
         return True, "Removed from your list."
     return False, "Book not in your list."
 
-# Recommendation (hybrid)
+# Recommendation - hybrid
 def recommend_for_user(user_email: str, top_n=6):
     books = load_books()
     issued = safe_load_json(ISSUED_FILE, [])
     pop = {b.get("id"): b.get("times_issued", 0) for b in books}
     if not user_email or not any(r.get("user_email","").lower() == user_email.lower() for r in issued):
-        # return top popular available books
         candidates = [b for b in books if b.get("available", True)]
         candidates = sorted(candidates, key=lambda x: pop.get(x.get("id"),0), reverse=True)
         return candidates[:top_n]
-    # user's last borrowed books
-    user_recs = sorted([r for r in issued if r.get("user_email","").lower()==user_email.lower()],
-                       key=lambda x: x.get("issue_date",""))
+    user_recs = sorted([r for r in issued if r.get("user_email","").lower() == user_email.lower()], key=lambda x: x.get("issue_date",""))
     last_ids = [r.get("book_id") for r in user_recs[-3:]]
     last_books = [b for b in books if b.get("id") in last_ids]
-    last_authors = set([b.get("author","").lower() for b in last_books if b.get("author")])
+    last_authors = set(b.get("author","").lower() for b in last_books if b.get("author"))
     last_tags = set()
     for b in last_books:
         for t in b.get("tags", []):
@@ -346,9 +332,9 @@ def recommend_for_user(user_email: str, top_n=6):
         score = 0.0
         if b.get("author") and b.get("author","").lower() in last_authors:
             score += 6.0
-        tag_overlap = len(set([t.lower() for t in b.get("tags", [])]) & last_tags)
+        tag_overlap = len(set(t.lower() for t in b.get("tags", [])) & last_tags)
         score += 2.0 * tag_overlap
-        score += pop.get(b.get("id"),0) / 5.0
+        score += pop.get(b.get("id"), 0) / 5.0
         if b.get("available", True):
             score += 1.0
         scores.append((score, b))
@@ -359,14 +345,7 @@ def recommend_for_user(user_email: str, top_n=6):
         recs += extra[:(top_n-len(recs))]
     return recs[:top_n]
 
-# -------------------- UI Helpers --------------------
-def days_left(deadline_iso: str) -> int:
-    try:
-        d = datetime.date.fromisoformat(deadline_iso)
-        return (d - datetime.date.today()).days
-    except Exception:
-        return 0
-
+# ---------------------- Presentation helpers ----------------------
 def safe_image(url, width=150):
     try:
         st.image(url, width=width)
@@ -379,9 +358,16 @@ def show_rating_stars(rating: float, max_stars=5):
     except:
         r = 0.0
     full = int(round(r))
-    full = min(max(full,0), max_stars)
+    full = min(max(full, 0), max_stars)
     stars = "★" * full + "☆" * (max_stars - full)
     return f"{stars} ({r:.1f})"
+
+def days_left(deadline_iso: str) -> int:
+    try:
+        d = datetime.date.fromisoformat(deadline_iso)
+        return (d - datetime.date.today()).days
+    except Exception:
+        return 0
 
 def book_card(book: dict, user=None):
     left, right = st.columns([1,3])
@@ -389,7 +375,7 @@ def book_card(book: dict, user=None):
         safe_image(book.get("cover"), width=150)
     with right:
         st.markdown(f"### {book.get('title')}")
-        st.markdown(f"**Author:** {book.get('author','-')}  \n**Book ID:** `{book.get('id')}`")
+        st.markdown(f"**Author:** {book.get('author','-')}  \n**ID:** `{book.get('id')}`")
         if book.get("price") is not None:
             st.markdown(f"**Price:** ₹{book.get('price')}")
         if book.get("rating"):
@@ -400,18 +386,18 @@ def book_card(book: dict, user=None):
         if c1.button("View Details", key=f"detail_{book['id']}"):
             st.session_state.page = "book_detail"
             st.session_state.book_id = book["id"]
-            st.experimental_rerun()
+            st.rerun()
         if user:
-            if book.get("id") in user.get("favorites",[]):
+            if book.get("id") in user.get("favorites", []):
                 if c2.button("★ Favorited", key=f"favrem_{book['id']}"):
                     remove_favorite(user["email"], book["id"])
                     st.session_state.user = find_user_by_email(user["email"])
-                    st.experimental_rerun()
+                    st.rerun()
             else:
                 if c2.button("☆ Add to List", key=f"favadd_{book['id']}"):
                     add_favorite(user["email"], book["id"])
                     st.session_state.user = find_user_by_email(user["email"])
-                    st.experimental_rerun()
+                    st.rerun()
             if user.get("role") != "Librarian":
                 if book.get("available", True):
                     if c3.button("📚 Issue Book", key=f"issue_{book['id']}"):
@@ -420,25 +406,24 @@ def book_card(book: dict, user=None):
                             st.success(f"Issued — due {resp.get('deadline')}")
                         else:
                             st.error(resp)
-                        st.experimental_rerun()
+                        st.rerun()
             else:
-                # Librarian action placeholders
                 if c3.button("✏ Edit", key=f"edit_{book['id']}"):
                     st.session_state.edit_book_id = book["id"]
                     st.session_state.page = "librarian_edit"
-                    st.experimental_rerun()
+                    st.rerun()
                 if c4.button("🗑 Delete", key=f"del_{book['id']}"):
                     ok,msg = delete_book(book["id"])
                     if ok:
                         st.success(msg)
                     else:
                         st.error(msg)
-                    st.experimental_rerun()
+                    st.rerun()
         else:
             c2.info("Login to issue / save")
     st.write("---")
 
-# -------------------- App state init --------------------
+# ---------------------- Session state init ----------------------
 if "user" not in st.session_state:
     st.session_state.user = None
 if "page" not in st.session_state:
@@ -448,38 +433,36 @@ if "book_id" not in st.session_state:
 if "edit_book_id" not in st.session_state:
     st.session_state.edit_book_id = None
 
-# -------------------- Header --------------------
+# ---------------------- Header ----------------------
 st.markdown("<h1 style='margin-bottom:0.1rem'>📚 Smart Library</h1>", unsafe_allow_html=True)
-st.markdown("<div style='color:#6c757d;margin-top:0;'>A role-based Streamlit library with book detail pages & hybrid recommendations</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#6c757d;margin-top:0;'>Role-based Streamlit Library with detailed book pages & hybrid recommendations</div>", unsafe_allow_html=True)
 st.write("---")
 
-# -------------------- Sidebar Nav (dynamic) --------------------
-def get_nav_options():
+# ---------------------- Sidebar Nav ----------------------
+def nav_options():
     if st.session_state.user:
-        options = ["Home", "My Favorites", "My Issued Books", "Recommendations", "About"]
+        opts = ["Home", "My Favorites", "My Issued Books", "Recommendations", "About"]
         if st.session_state.user.get("role") == "Librarian":
-            options.insert(1, "Librarian Console")
-        return options
+            opts.insert(1, "Librarian Console")
+        return opts
     else:
         return ["Home", "Login", "Sign Up", "About"]
 
-nav_options = get_nav_options()
-# keep previous page selection if valid
-if st.session_state.page not in nav_options:
-    st.session_state.page = nav_options[0]
-choice = st.sidebar.selectbox("Navigation", nav_options, index=nav_options.index(st.session_state.page))
+options = nav_options()
+if st.session_state.page not in options:
+    st.session_state.page = options[0]
+choice = st.sidebar.selectbox("Navigation", options, index=options.index(st.session_state.page))
 st.session_state.page = choice
 
-# profile / logout
 if st.session_state.user:
     st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Signed in as**  \n{st.session_state.user['name']}  \n{st.session_state.user['email']}  \n**Role:** {st.session_state.user['role']}")
+    st.sidebar.markdown(f"**Signed in as**  \n{st.session_state.user.get('name')}  \n{st.session_state.user.get('email')}  \n**Role:** {st.session_state.user.get('role')}")
     if st.sidebar.button("Logout"):
         st.session_state.user = None
         st.session_state.page = "Home"
-        st.experimental_rerun()
+        st.rerun()
 
-# -------------------- Pages --------------------
+# ---------------------- Pages ----------------------
 def page_home():
     st.subheader("Library Home")
     books = load_books()
@@ -512,9 +495,9 @@ def page_login():
             ok, resp = login(email, password)
             if ok:
                 st.session_state.user = resp
-                st.session_state.page = "Home"   # redirect to home
+                st.session_state.page = "Home"
                 st.success(f"Welcome back, {resp.get('name')} — redirected to Home.")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error(resp)
 
@@ -530,26 +513,25 @@ def page_signup():
         if submitted:
             ok, resp = signup(name, mobile, email, password, role)
             if ok:
-                # auto-login and redirect
                 st.session_state.user = resp
                 st.session_state.page = "Home"
                 st.success("Account created and logged in — redirected to Home.")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error(resp)
 
 def page_about():
     st.subheader("About")
     st.write("""
-    Smart Library — Features:
+    Smart Library — features:
     - Role-based authentication (User / Librarian)
     - View all books with cover, details, and index
-    - Librarian: Add, Edit, Delete books
-    - Users: Add to book list (favorites), Issue & Return books
-    - Issued book tracking with deadline & days-left
-    - Book detail page (Flipkart-like): cover, price, rating, publisher, ISBN, pages, edition, language, description, index, reviews
-    - Hybrid recommender: author + tags + popularity + availability
-    - Safe JSON handling: no crash if files are empty or corrupted.
+    - Librarian-only: add / edit / delete books
+    - Users: add to favorites, issue & return books
+    - Issued book tracking + deadline & days-left
+    - Book detail page with metadata similar to shopping sites
+    - Hybrid recommender (author + tags + popularity + availability)
+    - Robust JSON handling to avoid crashes on empty/corrupt files
     """)
 
 def page_my_favorites():
@@ -558,7 +540,7 @@ def page_my_favorites():
         return
     st.subheader("My Book List (Favorites)")
     favs = st.session_state.user.get("favorites", [])
-    books_dict = {b.get("id"):b for b in load_books()}
+    books_dict = {b.get("id"): b for b in load_books()}
     if not favs:
         st.info("No books saved. Browse Home and add books to your list.")
         return
@@ -572,11 +554,11 @@ def page_my_issued():
         st.warning("Please login to view your issued books.")
         return
     st.subheader("My Issued Books")
-    issued = get_user_issued(st.session_state.user["email"])
+    issued = get_user_issued(st.session_state.user.get("email"))
     if not issued:
         st.info("You have no issued books.")
         return
-    books = {b.get("id"):b for b in load_books()}
+    books = {b.get("id"): b for b in load_books()}
     for rec in issued:
         b = books.get(rec.get("book_id"), {})
         left = days_left(rec.get("deadline",""))
@@ -586,11 +568,10 @@ def page_my_issued():
             st.write(f"Issued: {rec.get('issue_date')} • Due: {rec.get('deadline')} • Days left: {left}")
         with col2:
             if st.button("Return Book", key=f"return_{rec.get('record_id')}"):
-                ok,msg = return_book(rec.get('record_id'), st.session_state.user["email"])
+                ok,msg = return_book(rec.get('record_id'), st.session_state.user.get("email"))
                 if ok:
                     st.success(msg)
-                    # refresh user issued listing
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error(msg)
 
@@ -599,7 +580,7 @@ def page_recommendations():
         st.warning("Please login to view personalized recommendations.")
         return
     st.subheader("Recommended for you")
-    recs = recommend_for_user(st.session_state.user["email"], top_n=8)
+    recs = recommend_for_user(st.session_state.user.get("email"), top_n=8)
     if not recs:
         st.info("No recommendations available yet.")
         return
@@ -620,32 +601,32 @@ def page_book_detail():
         safe_image(book.get("cover"), width=300)
         if book.get("price") is not None:
             st.markdown(f"### ₹{book.get('price')}")
-        st.markdown(f"**Availability:** {'Available' if book.get('available',True) else 'Checked out'}")
+        st.markdown(f"**Availability:** {'Available' if book.get('available', True) else 'Checked out'}")
         if st.session_state.user:
-            if book.get("id") in st.session_state.user.get("favorites",[]):
+            if book.get("id") in st.session_state.user.get("favorites", []):
                 if st.button("★ Favorited (Remove)"):
-                    remove_favorite(st.session_state.user["email"], book["id"])
-                    st.session_state.user = find_user_by_email(st.session_state.user["email"])
-                    st.experimental_rerun()
+                    remove_favorite(st.session_state.user.get("email"), book.get("id"))
+                    st.session_state.user = find_user_by_email(st.session_state.user.get("email"))
+                    st.rerun()
             else:
                 if st.button("☆ Add to Book List"):
-                    add_favorite(st.session_state.user["email"], book["id"])
-                    st.session_state.user = find_user_by_email(st.session_state.user["email"])
-                    st.experimental_rerun()
+                    add_favorite(st.session_state.user.get("email"), book.get("id"))
+                    st.session_state.user = find_user_by_email(st.session_state.user.get("email"))
+                    st.rerun()
             if st.session_state.user.get("role") != "Librarian":
                 if book.get("available", True):
                     if st.button("📚 Issue This Book"):
-                        ok, resp = issue_book(book["id"], st.session_state.user["email"])
+                        ok, resp = issue_book(book.get("id"), st.session_state.user.get("email"))
                         if ok:
                             st.success(f"Issued — due {resp.get('deadline')}")
                         else:
                             st.error(resp)
-                        st.experimental_rerun()
+                        st.rerun()
             else:
                 if st.button("✏ Edit Book (Console)"):
-                    st.session_state.edit_book_id = book["id"]
+                    st.session_state.edit_book_id = book.get("id")
                     st.session_state.page = "Librarian Console"
-                    st.experimental_rerun()
+                    st.rerun()
     with right:
         st.markdown(f"## {book.get('title')}")
         st.markdown(f"**Author:** {book.get('author','-')}")
@@ -672,15 +653,14 @@ def page_book_detail():
         else:
             st.info("No reviews yet for this book.")
     st.subheader("Related / Recommended")
-    # show same-author first
-    same_author = [b for b in load_books() if b.get("author","").lower()==book.get("author","").lower() and b.get("id")!=book.get("id")]
+    same_author = [b for b in load_books() if b.get("author","").lower() == book.get("author","").lower() and b.get("id") != book.get("id")]
     shown = 0
     if same_author:
         for sb in same_author[:3]:
             book_card(sb, st.session_state.user)
             shown += 1
     if shown < 6:
-        recs = recommend_for_user(st.session_state.user["email"] if st.session_state.user else "", top_n=6)
+        recs = recommend_for_user(st.session_state.user.get("email") if st.session_state.user else "", top_n=6)
         for rb in recs:
             if rb.get("id") != book.get("id") and shown < 6:
                 book_card(rb, st.session_state.user)
@@ -691,9 +671,9 @@ def page_librarian_console():
         st.warning("Librarian access only.")
         return
     st.subheader("Librarian Console")
-    mode = st.selectbox("Console Mode", ["Add Book","Edit Book","All Issued"])
+    mode = st.selectbox("Mode", ["Add Book","Edit Book","All Issued"])
     if mode == "Add Book":
-        st.markdown("### Add a new book")
+        st.markdown("### Add a book")
         with st.form("add_book_form"):
             book_id = st.text_input("Book ID", value=str(uuid.uuid4())[:8])
             title = st.text_input("Title")
@@ -721,10 +701,10 @@ def page_librarian_console():
                 else:
                     st.error(msg)
     elif mode == "Edit Book":
-        st.markdown("### Edit book")
+        st.markdown("### Edit a book")
         books = load_books()
         if not books:
-            st.info("No books to edit.")
+            st.info("No books.")
             return
         key_map = {b.get("id"): f"{b.get('title')} — {b.get('author')}" for b in books}
         sel = st.selectbox("Select book", list(key_map.keys()), format_func=lambda x: key_map[x])
@@ -760,22 +740,22 @@ def page_librarian_console():
     else:
         st.markdown("### All Issued Records")
         issued = get_user_issued()
-        books = {b.get("id"):b for b in load_books()}
+        books_map = {b.get("id"):b for b in load_books()}
         if not issued:
             st.info("No issued records.")
             return
         for rec in issued:
-            b = books.get(rec.get("book_id"), {})
+            b = books_map.get(rec.get("book_id"), {})
             st.write(f"- **{b.get('title','-')}** | Borrower: {rec.get('user_email')} | Due: {rec.get('deadline')}")
             if st.button(f"Return {rec.get('record_id')}", key=f"libret_{rec.get('record_id')}"):
                 ok,msg = return_book(rec.get('record_id'))
                 if ok:
                     st.success("Returned")
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error(msg)
 
-# Dispatch
+# Dispatcher
 page = st.session_state.page
 if page == "Home":
     page_home()
