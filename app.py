@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import json
 import os
@@ -23,6 +22,7 @@ APP_TITLE = "📚 Smart Library System"
 # Safe JSON helpers
 # -------------------------
 def backup_corrupt_file(path: str):
+    """If file is corrupt, move it aside with timestamp for inspection."""
     try:
         ts = int(time.time())
         bak = f"{path}.corrupt.{ts}"
@@ -35,24 +35,28 @@ def save_json(path: str, data: Any):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 def load_json(path: str, default):
+    """Load JSON safely; if missing/empty/corrupt, create file with default and return default."""
     if not os.path.exists(path):
         save_json(path, default)
         return default
     try:
+        # guard against an empty file
         if os.path.getsize(path) == 0:
             save_json(path, default)
             return default
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
+        # back up corrupted file and recreate defaults
         backup_corrupt_file(path)
         save_json(path, default)
         return default
     except Exception:
+        # any other IO problem -> return default
         return default
 
 # -------------------------
-# Bootstrapping initial data
+# Bootstrapping initial data (only when files missing/corrupt)
 # -------------------------
 def bootstrap_files():
     sample_books = [
@@ -111,13 +115,15 @@ def bootstrap_files():
             "favorites": []
         }
     ]
-    sample_issued = []
+    sample_issued = []  # empty by default
+
+    # load_json will create the files if missing or corrupted
     load_json(BOOKS_FILE, sample_books)
     load_json(USERS_FILE, sample_users)
     load_json(ISSUED_FILE, sample_issued)
 
 # -------------------------
-# Data helpers
+# Data access helpers
 # -------------------------
 def get_books() -> List[Dict[str,Any]]:
     return load_json(BOOKS_FILE, [])
@@ -165,6 +171,7 @@ def login_user(email: str, password: str):
     phash = hash_password(password)
     for u in users:
         if u['email'].lower() == email_l and u['password_hash'] == phash:
+            # return a copy (avoid accidental references)
             return {k: v for k,v in u.items() if k != 'password_hash'}
     return None
 
@@ -210,10 +217,12 @@ def return_book_from_user(user_email: str, book_id: int) -> (bool,str,int):
     due = datetime.fromisoformat(rec['due_date']).date()
     fine = (today - due).days * FINE_PER_DAY if today > due else 0
 
+    # mark returned
     rec['returned'] = True
     rec['return_date'] = str(today)
     save_issued(issued)
 
+    # make book available again
     for b in books:
         if b['id'] == book_id:
             b['available'] = True
@@ -235,65 +244,50 @@ def calculate_fine_for_record(rec: Dict[str,Any]) -> int:
 def recommend_for_user(user_email: str, top_k: int = 6) -> List[Dict[str,Any]]:
     books = get_books()
     issued = get_issued()
-    users = get_users()
-    # collect genres from user's issued books
-    issued_genres = set()
-    for r in issued:
-        if r['user_email'].lower() == user_email.lower():
-            bk = next((b for b in books if b['id'] == r['book_id']), None)
-            if bk:
-                for g in bk.get('genre', []):
-                    issued_genres.add(g)
-    # collect genres from user's favorites
-    user = next((u for u in users if u['email'].lower() == user_email.lower()), None)
-    fav_genres = set()
-    if user:
-        for fid in user.get('favorites', []):
-            bk = next((b for b in books if b['id'] == fid), None)
-            if bk:
-                for g in bk.get('genre', []):
-                    fav_genres.add(g)
-    combined_genres = issued_genres | fav_genres
-
-    if combined_genres:
-        # recommend books matching those genres, exclude already issued to user
-        user_issued_ids = {r['book_id'] for r in issued if r['user_email'].lower() == user_email.lower()}
-        user_fav_ids = set(user.get('favorites', [])) if user else set()
-        candidates = [b for b in books if any(g in combined_genres for g in b.get('genre', [])) and b['id'] not in user_issued_ids and b['id'] not in user_fav_ids]
-        return candidates[:top_k] if candidates else []
-    # cold start
-    available = [b for b in books if b.get('available', False)]
-    return sorted(available, key=lambda x: x.get('added_on','0000-00-00'), reverse=True)[:top_k] if available else books[:top_k]
+    user_issues = [r for r in issued if r['user_email'].lower() == user_email.lower()]
+    if not user_issues:
+        # cold start: return newest or available books
+        available = [b for b in books if b.get('available', False)]
+        return sorted(available, key=lambda x: x.get('added_on','0000-00-00'), reverse=True)[:top_k] if available else books[:top_k]
+    last = sorted(user_issues, key=lambda r: r['issue_date'], reverse=True)[0]
+    seed = next((b for b in books if b['id'] == last['book_id']), None)
+    if not seed:
+        return books[:top_k]
+    def score(b):
+        s = 0
+        if b.get('author') == seed.get('author'):
+            s += 3
+        s += len(set(b.get('genre',[])) & set(seed.get('genre',[]))) * 1.5
+        s += len(set(b.get('keywords',[])) & set(seed.get('keywords',[]))) * 0.7
+        s += (1 if b.get('available', False) else 0) * 0.2
+        if b['id'] == seed['id']:
+            s -= 10
+        return s
+    ranked = sorted(books, key=score, reverse=True)
+    return ranked[:top_k]
 
 def chatbot_response_for_user(user_email: str, message: str) -> str:
     m = message.strip().lower()
     if not m:
         return "Ask me for recommendations or how to issue/return books."
-    # if user gives an interest keyword, search by genre/keywords/title
-    keywords = m.split()
-    books = get_books()
-    suggestions = []
-    for b in books:
-        text = " ".join((b.get('title',''), " ".join(b.get('genre',[])), " ".join(b.get('keywords',[])))).lower()
-        if any(k in text for k in keywords):
-            suggestions.append(b)
-    if suggestions:
-        top3 = suggestions[:6]
-        return "Here are books matching your interest:\n" + "\n".join([f"- {r['title']} by {r['author']}" for r in top3])
-    # fallback to recommend_for_user if user asked for recommend
     if "recommend" in m or "suggest" in m:
-        recs = recommend_for_user(user_email, top_k=6)
-        if recs:
-            return "Based on your history/favorites, I suggest:\n" + "\n".join([f"- {r['title']} by {r['author']}" for r in recs])
+        if "python" in m:
+            recs = [b for b in get_books() if 'python' in (b.get('keywords',[]) + [b['title'].lower()])]
         else:
-            return "No personalized recommendations available yet. Try issuing/favoriting books first."
-    if "how to issue" in m or "issue" in m:
-        return "To issue a book: go to 'All Books', click Issue (you'll get a Yes/No confirmation)."
-    if "how to return" in m or "return" in m:
-        return "To return: go to 'Issued Books' and press Return. Fines are computed automatically for late returns."
+            recs = recommend_for_user(user_email, top_k=3)
+        if not recs:
+            return "No recommendations right now. Try another keyword."
+        return "I recommend:\n" + "\n".join([f"- {r['title']} by {r['author']}" for r in recs])
+    if "how to issue" in m or "issue a book" in m:
+        return "Go to 'All Books', then click the Issue button (only available for Users)."
+    if "how to return" in m or "return a book" in m:
+        return "Go to 'Issued Books' and click Return next to the book you want to return."
+    if "genres" in m or "categories" in m:
+        genres = sorted({g for b in get_books() for g in b.get('genre',[])})
+        return "Available genres: " + ", ".join(genres) if genres else "No genre data available."
     if any(x in m for x in ["hi","hello","hey"]):
-        return "Hello! Tell me an interest (e.g. 'python', 'fiction', 'ai') and I'll suggest books."
-    return "Sorry, I didn't understand. Try typing a genre or 'recommend'."
+        return "Hello! I'm the Chatbot Librarian. Try: 'Recommend Python books', 'How to issue a book', or 'What genres are available?'."
+    return "Sorry — I didn't understand. Try: 'Recommend Python books', 'How to issue a book', or 'What genres are available?'."
 
 # -------------------------
 # UI helpers
@@ -312,18 +306,17 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
         st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
         c1, c2, c3 = st.columns([1,1,1])
-        # Issue button (single) with confirmation
         with c1:
             if book.get('available', False):
-                if st.button("Issue", key=f"issue_btn_{book['id']}"):
-                    # set pending_issue in session for confirmation
-                    st.session_state['pending_issue'] = {'book_id': book['id'], 'title': book['title']}
-                    st.experimental_rerun()
-            else:
-                st.button("Not Available", key=f"issue_disabled_{book['id']}", disabled=True)
-        # Favorite button (single)
+                if st.button(f"📥 Issue ({book['id']})", key=f"issue_{book['id']}"):
+                    ok,msg = issue_book_to_user(current_user_email, book['id'])
+                    if ok:
+                        st.success(msg)
+                    else:
+                        st.error(msg)
+                    st.rerun()
         with c2:
-            if st.button("Add to Favorites", key=f"fav_btn_{book['id']}"):
+            if st.button(f"⭐ Favorite ({book['id']})", key=f"favbtn_{book['id']}"):
                 users = get_users()
                 for u in users:
                     if u['email'].lower() == current_user_email.lower():
@@ -333,10 +326,9 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                             st.success("Added to favorites.")
                         else:
                             st.info("Already in favorites.")
-                st.experimental_rerun()
-        # Overview
+                st.rerun()
         with c3:
-            if st.button("Overview", key=f"ov_btn_{book['id']}"):
+            if st.button(f"🔎 Overview ({book['id']})", key=f"ov_{book['id']}"):
                 st.session_state['view_book'] = book['id']
 
 # -------------------------
@@ -346,16 +338,15 @@ def app():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
     st.title(APP_TITLE)
 
+    # Ensure files exist / are sane
     bootstrap_files()
 
     if 'user' not in st.session_state:
         st.session_state['user'] = None
     if 'view_book' not in st.session_state:
         st.session_state['view_book'] = None
-    if 'pending_issue' not in st.session_state:
-        st.session_state['pending_issue'] = None
 
-    # Not logged in
+    # Not logged in: show login/signup
     if st.session_state['user'] is None:
         left, right = st.columns([2,1])
         with left:
@@ -384,18 +375,18 @@ def app():
                 if user:
                     st.session_state['user'] = user
                     st.success(f"Welcome {user['name']} — opening dashboard...")
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("Invalid credentials.")
         st.stop()
 
-    # Logged in pages
+    # Logged in
     current_user = st.session_state['user']
     st.sidebar.markdown(f"### 👤 {current_user['name']}")
     st.sidebar.markdown(f"**Role:** {current_user['role'].capitalize()}")
     st.sidebar.markdown("---")
 
-    # Notifications (due soon / overdue)
+    # Notifications
     notes = []
     user_issued = user_active_issues(current_user['email'])
     for rec in user_issued:
@@ -403,7 +394,7 @@ def app():
         days_left = (due - date.today()).days
         book = next((b for b in get_books() if b['id'] == rec['book_id']), None)
         title = book['title'] if book else f"Book #{rec['book_id']}"
-        if 0 < days_left <= 3:
+        if days_left <= 3 and days_left > 0:
             notes.append(f"⏳ {days_left} days left to return: {title} (due {rec['due_date']})")
         if days_left < 0:
             fine_now = calculate_fine_for_record(rec)
@@ -416,24 +407,23 @@ def app():
         st.sidebar.markdown("---")
 
     # Chatbot
-    st.sidebar.markdown("### 🤖 Chatbot")
-    chat_q = st.sidebar.text_input("Tell me your interest (e.g. 'python', 'fiction')", key="chat_q")
+    st.sidebar.markdown("### 🤖 Chatbot Librarian")
+    chat_q = st.sidebar.text_input("Ask (e.g. 'Recommend Python books')", key="chat_q")
     if st.sidebar.button("Ask"):
         if chat_q:
-            resp = chatbot_response_for_user(current_user['email'], chat_q)
-            st.sidebar.info(resp)
+            st.sidebar.info(chatbot_response_for_user(current_user['email'], chat_q))
 
-    # navigation
+    # Role-based navigation
     if current_user['role'] == 'user':
         page = st.sidebar.radio("Navigate", ["Dashboard","All Books","Favorites","Issued Books","Recommendations","Account","Logout"])
     else:
         page = st.sidebar.radio("Navigate", ["Dashboard","All Books","Add Book","Delete Book","Issued Overview","Account","Logout"])
 
+    # ---------- Pages ----------
     if page == "Logout":
         st.session_state.clear()
-        st.experimental_rerun()
+        st.rerun()
 
-    # Dashboard
     if page == "Dashboard":
         st.header("📊 Dashboard")
         users = get_users()
@@ -443,7 +433,6 @@ def app():
         st.write(f"- ⭐ Favorites: **{fav_count}**")
         st.write(f"- 📥 Active borrowed books: **{active_issues}**")
 
-    # All Books page - main listing + confirmation UI
     elif page == "All Books":
         st.header("📚 All Books")
         all_books = get_books()
@@ -456,34 +445,7 @@ def app():
             book_card_ui(b, current_user['email'])
             st.divider()
 
-        # Confirmation popup for pending issue (single place)
-        if st.session_state.get('pending_issue'):
-            pending = st.session_state['pending_issue']
-            # fetch book to ensure latest status
-            book = next((x for x in get_books() if x['id'] == pending['book_id']), None)
-            if book:
-                st.markdown("---")
-                st.warning(f"Do you want to issue '{book['title']}'? This will set due date to {DEFAULT_LOAN_DAYS} days from today.")
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button("✅ Yes, Issue"):
-                        ok,msg = issue_book_to_user(current_user['email'], book['id'])
-                        if ok:
-                            st.success(msg)
-                        else:
-                            st.error(msg)
-                        st.session_state['pending_issue'] = None
-                        st.experimental_rerun()
-                with col2:
-                    if st.button("❌ No, Cancel"):
-                        st.info("Issue cancelled.")
-                        st.session_state['pending_issue'] = None
-                        st.experimental_rerun()
-            else:
-                st.info("Selected book not found anymore.")
-                st.session_state['pending_issue'] = None
-
-        # book overview (if requested)
+        # show overview if requested
         if st.session_state.get('view_book'):
             bid = st.session_state.pop('view_book')
             book = next((x for x in get_books() if x['id'] == bid), None)
@@ -506,7 +468,6 @@ def app():
                     for i, ch in enumerate(book.get('index', []), 1):
                         st.write(f"{i}. {ch}")
 
-    # Favorites page (clean Issue & Remove actions)
     elif page == "Favorites":
         st.header("⭐ Your Favorites")
         users = get_users()
@@ -527,23 +488,22 @@ def app():
                             except Exception:
                                 st.write("[Img]")
                     with c2:
-                        if b.get('available', False):
-                            if st.button("Issue", key=f"fav_issue_{b['id']}"):
-                                # set pending and confirmation will appear in All Books page after rerun
-                                st.session_state['pending_issue'] = {'book_id': b['id'], 'title': b['title']}
-                                st.experimental_rerun()
-                        else:
-                            st.button("Not Available", key=f"fav_notavail_{b['id']}", disabled=True)
-                        if st.button("Remove favorite", key=f"rmfav_{b['id']}"):
+                        if b.get('available', False) and st.button(f"Issue {b['id']}", key=f"fav_issue_{b['id']}"):
+                            ok,msg = issue_book_to_user(current_user['email'], b['id'])
+                            if ok:
+                                st.success(msg)
+                            else:
+                                st.error(msg)
+                            st.rerun()
+                        if st.button(f"Remove favorite {b['id']}", key=f"rmfav_{b['id']}"):
                             users = get_users()
                             for uu in users:
                                 if uu['email'].lower() == current_user['email'].lower():
                                     uu['favorites'] = [x for x in uu.get('favorites', []) if x != b['id']]
                                     save_users(users)
                                     st.success("Removed from favorites.")
-                                    st.experimental_rerun()
+                                    st.rerun()
 
-    # Issued Books page
     elif page == "Issued Books":
         st.header("📥 Your Issued Books")
         issued = user_active_issues(current_user['email'])
@@ -571,23 +531,24 @@ def app():
                             st.success("Returned successfully. No fine.")
                     else:
                         st.error(msg)
-                    st.experimental_rerun()
+                    st.rerun()
 
-    # Recommendations - based on issued + favorites (no random)
     elif page == "Recommendations":
         st.header("🎯 Recommended for you")
         recs = recommend_for_user(current_user['email'])
         if not recs:
-            st.info("No personalized recommendations yet. Issue or favorite books to get tailored suggestions.")
+            st.info("No recommendations yet.")
         else:
             for r in recs:
                 st.write(f"**{r['title']}** — {r['author']} (Available: {'Yes' if r.get('available') else 'No'})")
-                if r.get('available', False):
-                    if st.button("Issue", key=f"rec_issue_{r['id']}"):
-                        st.session_state['pending_issue'] = {'book_id': r['id'], 'title': r['title']}
-                        st.experimental_rerun()
+                if st.button(f"Issue {r['id']}", key=f"rec_issue_{r['id']}"):
+                    ok,msg = issue_book_to_user(current_user['email'], r['id'])
+                    if ok:
+                        st.success(msg)
+                    else:
+                        st.error(msg)
+                    st.rerun()
 
-    # Account
     elif page == "Account":
         st.header("⚙️ Account")
         st.write(f"**Name:** {current_user['name']}")
@@ -600,7 +561,7 @@ def app():
             save_users(users)
             st.success("Account deleted.")
             st.session_state.clear()
-            st.experimental_rerun()
+            st.rerun()
 
     # Librarian pages
     elif page == "Add Book" and current_user['role'] == 'librarian':
@@ -631,7 +592,7 @@ def app():
                 })
                 save_books(books)
                 st.success("Book added.")
-                st.experimental_rerun()
+                st.rerun()
 
     elif page == "Delete Book" and current_user['role'] == 'librarian':
         st.header("🗑 Delete Book")
@@ -642,6 +603,7 @@ def app():
             choice = st.selectbox("Select book to delete", [f"{b['id']} — {b['title']}" for b in books])
             if st.button("Delete selected book"):
                 bid = int(choice.split(" — ")[0])
+                # prevent deleting if currently issued and not returned
                 issued = get_issued()
                 active = [r for r in issued if r['book_id'] == bid and not r.get('returned', False)]
                 if active:
@@ -650,7 +612,7 @@ def app():
                     books = [b for b in books if b['id'] != bid]
                     save_books(books)
                     st.success("Deleted.")
-                    st.experimental_rerun()
+                    st.rerun()
 
     elif page == "Issued Overview" and current_user['role'] == 'librarian':
         st.header("📋 Issued Books Overview")
