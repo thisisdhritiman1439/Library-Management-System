@@ -13,8 +13,6 @@ from typing import List, Dict, Any
 BOOKS_FILE = "books_data.json"
 USERS_FILE = "users.json"
 ISSUED_FILE = "issued_books.json"
-DEFAULT_COVER = "https://via.placeholder.com/150?text=No+Cover"
-
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
@@ -30,22 +28,6 @@ def backup_corrupt_file(path: str):
         shutil.copy(path, bak)
     except Exception:
         pass
-
-def book_card_ui(book: Dict[str,Any], current_user_email: str):
-    cols = st.columns([1,3])
-    with cols[0]:
-        cover = book.get('cover_url') or DEFAULT_COVER
-        try:
-            st.image(cover, width=110)
-        except:
-            st.image(DEFAULT_COVER, width=110)
-
-def get_book_cover(book: Dict[str, Any], width=110):
-    url = book.get('cover_url') or DEFAULT_COVER
-    try:
-        st.image(url, width=width)
-    except:
-        st.image(DEFAULT_COVER, width=width)
 
 def save_json(path: str, data: Any):
     with open(path, "w", encoding="utf-8") as f:
@@ -344,12 +326,6 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         with c3:
             with st.expander("🔎 Overview"):
                 st.image(book.get('cover_url',''), width=150)
-                if book.get('cover_url'):
-                    try:
-                        st.image(book['cover_url'], width=110)
-                    except:
-                        st.write("[No Image]")
-
                 st.markdown(f"**Title:** {book.get('title','')}")
                 st.markdown(f"**Author:** {book.get('author','')}")
                 genres = book.get('genre', [])
