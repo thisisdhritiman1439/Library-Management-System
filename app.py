@@ -284,14 +284,14 @@ def chatbot_response_for_user(user_email: str, message: str) -> str:
 # -------------------------
 # UI helpers
 # -------------------------
-    def book_card_ui(book: Dict[str,Any], current_user_email: str):
-        issue_key = f"issue_{book['id']}"
-        confirm_key = f"confirm_{book['id']}"
+def book_card_ui(book: Dict[str,Any], current_user_email: str):
+    issue_key = f"issue_{book['id']}"
+    confirm_key = f"confirm_{book['id']}"
     
-        # Initialize the confirmation flag if not set
-        if confirm_key not in st.session_state:
-            st.session_state[confirm_key] = False
-    
+    # Initialize the confirmation flag if not set
+    if confirm_key not in st.session_state:
+        st.session_state[confirm_key] = False
+
         cols = st.columns([1,3])
         with cols[0]:
             if book.get('cover_url'):
