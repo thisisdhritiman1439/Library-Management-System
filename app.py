@@ -304,7 +304,7 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
     with c1:
         if book.get('available', False):
             if st.button("📥 Issue", key=f"issue_{book['id']}"):
-            # Show confirmation radio
+            # Create a placeholder for the confirmation radio
                 confirm = st.radio(
                 f"Do you want to issue '{book['title']}'?", 
                 options=["No","Yes"], 
