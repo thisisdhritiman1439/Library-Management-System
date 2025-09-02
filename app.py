@@ -306,30 +306,31 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
             issue_key = f"issue_{book['id']}"
             confirm_key = f"confirm_{book['id']}"
 
-        # Step 1: Click Issue button -> show confirmation
+    # Step 1: Click Issue button -> show confirmation
         if st.button("📥 Issue", key=issue_key):
             st.session_state[confirm_key] = True
 
-        # Step 2: Show confirmation if flag is set
+    # Step 2: Show confirmation if flag is set
         if st.session_state.get(confirm_key):
             st.write(f"Do you want to issue '{book['title']}'?")
             choice = st.radio(
                 "Choose an option:",
                 options=["No", "Yes"],
                 key=f"radio_{book['id']}"
-            )
-            if st.button("Confirm", key=f"confirm_btn_{book['id']}"):
-                if choice == "Yes":
-                    ok, msg = issue_book_to_user(current_user_email, book['id'])
-                    if ok:
-                        st.success(msg)
-                    else:
-                        st.error(msg)
+        )
+        if st.button("Confirm", key=f"confirm_btn_{book['id']}"):
+            if choice == "Yes":
+                ok, msg = issue_book_to_user(current_user_email, book['id'])
+                if ok:
+                    st.success(msg)
                 else:
-                    st.info("Issue cancelled.")
-                # Reset flag and rerun UI
-                st.session_state[confirm_key] = False
-                st.rerun()
+                    st.error(msg)
+            else:
+                st.info("Issue cancelled.")
+            # Reset flag and rerun UI
+            st.session_state[confirm_key] = False
+            st.rerun()
+
 
         with c2:
             if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}"):
