@@ -311,7 +311,10 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                 st.image(book.get('cover_url',''), width=150)
                 st.markdown(f"**Title:** {book.get('title','')}")
                 st.markdown(f"**Author:** {book.get('author','')}")
-                st.markdown(f"**Genre:** {', '.join(book.get('genre',[]))}")
+                genres = book.get('genre', [])
+                if isinstance(genres, str):
+                    genres = [genres]  # wrap string in list
+                st.markdown(f"**Genre:** {', '.join(genres)}")
                 st.markdown("**Description:**")
                 st.write(book.get('description',''))
                 st.markdown("**Index:**")
