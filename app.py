@@ -278,9 +278,9 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
     with cols[1]:
         st.markdown(f"### {book['title']}")
         genres = book.get('genre', [])
-            if isinstance(genres, str):
-        genres = [genres]  # wrap string in list
-        st.markdown(f"**Genre:** {', '.join(genres)}")
+        if isinstance(genres, str):
+            genres = [genres]  # wrap string in list
+            st.markdown(f"**Genre:** {', '.join(genres)}")
         st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
         st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
         c1,c2,c3 = st.columns([1,1,1])
