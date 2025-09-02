@@ -301,22 +301,35 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
         st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
         c1,c2,c3 = st.columns([1,1,1])
-    with c1:
-        if book.get('available', False):
-            if st.button("📥 Issue", key=f"issue_{book['id']}"):
-            # Create a placeholder for the confirmation radio
-                confirm = st.radio(
-                f"Do you want to issue '{book['title']}'?", 
-                options=["No","Yes"], 
-                key=f"confirm_{book['id']}"
+   with c1:
+    if book.get('available', False):
+        issue_key = f"issue_{book['id']}"
+        confirm_key = f"confirm_{book['id']}"
+
+        # When Issue button is clicked, set a session_state flag
+        if st.button("📥 Issue", key=issue_key):
+            st.session_state[confirm_key] = True
+
+        # Only show confirmation if flag is set
+        if st.session_state.get(confirm_key):
+            choice = st.radio(
+                f"Do you want to issue '{book['title']}'?",
+                options=["No", "Yes"],
+                key=f"radio_{book['id']}"
             )
-            if confirm == "Yes":
-                ok,msg = issue_book_to_user(current_user_email, book['id'])
+            if choice == "Yes":
+                ok, msg = issue_book_to_user(current_user_email, book['id'])
                 if ok:
                     st.success(msg)
                 else:
                     st.error(msg)
+                # Reset the confirmation flag and rerun
+                st.session_state[confirm_key] = False
                 st.rerun()
+            elif choice == "No":
+                st.info("Issue cancelled.")
+                st.session_state[confirm_key] = False
+
 
         with c2:
             if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}"):
