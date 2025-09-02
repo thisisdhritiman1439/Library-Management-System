@@ -404,8 +404,10 @@ def app():
             notes.append(f"⚠ Overdue: {title} — fine ₹{fine_now}")
     if notes:
         st.sidebar.markdown("#### 🔔 Notifications")
-        for n in notes: st.sidebar.write(n)
-            st.sidebar.markdown("---")
+        for n in notes:
+            st.sidebar.write(n)
+        st.sidebar.markdown("---")
+
 
     # Chatbot
     st.sidebar.markdown("### 🤖 Chatbot")
