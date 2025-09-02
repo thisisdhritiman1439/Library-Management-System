@@ -13,7 +13,7 @@ from typing import List, Dict, Any
 BOOKS_FILE = "books_data.json"
 USERS_FILE = "users.json"
 ISSUED_FILE = "issued_books.json"
-DEFAULT_COVER = "https://via.placeholder.com/110x150?text=No+Cover"
+DEFAULT_COVER = "https://via.placeholder.com/150?text=No+Cover"
 
 
 FINE_PER_DAY = 10
@@ -30,6 +30,15 @@ def backup_corrupt_file(path: str):
         shutil.copy(path, bak)
     except Exception:
         pass
+
+def book_card_ui(book: Dict[str,Any], current_user_email: str):
+    cols = st.columns([1,3])
+    with cols[0]:
+        cover = book.get('cover_url') or DEFAULT_COVER
+        try:
+            st.image(cover, width=110)
+        except:
+            st.image(DEFAULT_COVER, width=110)
 
 def get_book_cover(book: Dict[str, Any], width=110):
     url = book.get('cover_url') or DEFAULT_COVER
