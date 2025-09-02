@@ -307,8 +307,16 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                             st.info("Already in favorites.")
                 st.rerun()
         with c3:
-            if st.button("🔎 Overview", key=f"ov_{book['id']}"):
-                st.session_state['view_book'] = book['id']
+        with st.expander("🔎 Overview"):
+        st.image(book.get('cover_url',''), width=150)
+        st.markdown(f"**Title:** {book.get('title','')}")
+        st.markdown(f"**Author:** {book.get('author','')}")
+        st.markdown(f"**Genre:** {', '.join(book.get('genre',[]))}")
+        st.markdown("**Description:**")
+        st.write(book.get('description',''))
+        st.markdown("**Index:**")
+        for idx in book.get('index', []):
+            st.write(f"- {idx}")
 
 # -------------------------
 # Main app
