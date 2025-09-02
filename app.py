@@ -243,29 +243,43 @@ def recommend_for_user(user_email: str, top_k: int = 6) -> List[Dict[str,Any]]:
         return s
     ranked = sorted(books, key=score, reverse=True)
     return ranked[:top_k]
-import openai
-openai.api_key = "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"
-def ai_chatbot_response(user_email: str, message: str) -> str:
-    user = next((u for u in get_users() if u['email'].lower()==user_email.lower()), {})
-    favorites = [b['title'] for b in get_books() if b['id'] in user.get('favorites', [])]
-    issued_books = [b['title'] for b in get_books() if any(r['book_id']==b['id'] for r in get_issued() if r['user_email'].lower()==user_email.lower())]
+def chatbot_response_for_user(user_email: str, message: str) -> str:
+    m = message.strip().lower()
+    if not m:
+        return "Ask me for book recommendations, or how to issue/return books."
 
-    system_prompt = f"""
-    You are a helpful Smart Library AI chatbot.
-    The user has these favorite books: {favorites}
-    The user has previously issued these books: {issued_books}
-    Suggest books to the user based on their interests or previous books.
-    """
+    # Book recommendation by user interest keywords
+    if "recommend" in m or "suggest" in m:
+        keywords = m.replace("recommend","").replace("suggest","").strip().split()
+        books = get_books()
+        # filter books by keywords in title, genre, or description
+        recs = []
+        for b in books:
+            text = (b.get('title','') + ' ' + ' '.join(b.get('genre',[])) + ' ' + b.get('description','')).lower()
+            if any(k in text for k in keywords) and b.get('available', False):
+                recs.append(b)
+        # fallback to previous issued or favorites
+        if not recs:
+            recs = recommend_for_user(user_email, top_k=3)
+        if not recs:
+            return "No recommendations found right now. Try another keyword."
+        return "I suggest:\n" + "\n".join([f"- {r['title']} by {r['author']}" for r in recs])
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": message}
-        ],
-        max_tokens=200
-    )
-    return response['choices'][0]['message']['content']
+    if "how to issue" in m or "issue a book" in m:
+        return "Go to 'All Books', then click the Issue button (only available for Users)."
+
+    if "how to return" in m or "return a book" in m:
+        return "Go to 'Issued Books' and click Return next to the book you want to return."
+
+    if "genres" in m or "categories" in m:
+        genres = sorted({g for b in get_books() for g in b.get('genre',[])} )
+        return "Available genres: " + ", ".join(genres) if genres else "No genre data available."
+
+    if any(x in m for x in ["hi","hello","hey"]):
+        return "Hello! I'm the Chatbot. Try: 'Recommend Python books', 'How to issue a book', or 'What genres are available?'."
+
+    return "Sorry — I didn't understand. Try: 'Recommend Python books', 'How to issue a book', or 'What genres are available?'."
+
 
 # -------------------------
 # UI helpers
@@ -391,14 +405,15 @@ def app():
     if notes:
         st.sidebar.markdown("#### 🔔 Notifications")
         for n in notes: st.sidebar.write(n)
-        st.sidebar.markdown("---")
+            st.sidebar.markdown("---")
 
     # Chatbot
-    st.sidebar.markdown("### 🤖 Chatbot Librarian")
+    st.sidebar.markdown("### 🤖 Chatbot")
     chat_q = st.sidebar.text_input("Ask (e.g. 'Recommend Python books')", key="chat_input")
     if st.sidebar.button("Ask", key="chat_btn"):
         if chat_q:
-            st.sidebar.info(ai_chatbot_response(current_user['email'], chat_q))
+            response = chatbot_response_for_user(current_user['email'], chat_q)
+            st.sidebar.info(response)
 
     # Navigation
     if current_user['role']=="user":
