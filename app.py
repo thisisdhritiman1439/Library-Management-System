@@ -301,10 +301,10 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
         st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
         c1,c2,c3 = st.columns([1,1,1])
-   with c1:
-    if book.get('available', False):
-        issue_key = f"issue_{book['id']}"
-        confirm_key = f"confirm_{book['id']}"
+    with c1:
+        if book.get('available', False):
+            issue_key = f"issue_{book['id']}"
+            confirm_key = f"confirm_{book['id']}"
 
         # When Issue button is clicked, set a session_state flag
         if st.button("📥 Issue", key=issue_key):
