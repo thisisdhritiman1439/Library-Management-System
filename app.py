@@ -280,7 +280,7 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         genres = book.get('genre', [])
         if isinstance(genres, str):
             genres = [genres]  # wrap string in list
-            st.markdown(f"**Genre:** {', '.join(genres)}")
+        st.markdown(f"**Genre:** {', '.join(genres)}")
         st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
         st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
         c1,c2,c3 = st.columns([1,1,1])
@@ -307,16 +307,17 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                             st.info("Already in favorites.")
                 st.rerun()
         with c3:
-        with st.expander("🔎 Overview"):
-        st.image(book.get('cover_url',''), width=150)
-        st.markdown(f"**Title:** {book.get('title','')}")
-        st.markdown(f"**Author:** {book.get('author','')}")
-        st.markdown(f"**Genre:** {', '.join(book.get('genre',[]))}")
-        st.markdown("**Description:**")
-        st.write(book.get('description',''))
-        st.markdown("**Index:**")
-        for idx in book.get('index', []):
-            st.write(f"- {idx}")
+            with st.expander("🔎 Overview"):
+                st.image(book.get('cover_url',''), width=150)
+                st.markdown(f"**Title:** {book.get('title','')}")
+                st.markdown(f"**Author:** {book.get('author','')}")
+                st.markdown(f"**Genre:** {', '.join(book.get('genre',[]))}")
+                st.markdown("**Description:**")
+                st.write(book.get('description',''))
+                st.markdown("**Index:**")
+                for idx in book.get('index', []):
+                    st.write(f"- {idx}")
+
 
 # -------------------------
 # Main app
