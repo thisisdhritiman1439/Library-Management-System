@@ -4,7 +4,6 @@ import os
 import shutil
 import time
 import hashlib
-import openai
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Any
 
@@ -14,7 +13,6 @@ from typing import List, Dict, Any
 BOOKS_FILE = "books_data.json"
 USERS_FILE = "users.json"
 ISSUED_FILE = "issued_books.json"
-openai.api_key = "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"
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
@@ -245,7 +243,8 @@ def recommend_for_user(user_email: str, top_k: int = 6) -> List[Dict[str,Any]]:
         return s
     ranked = sorted(books, key=score, reverse=True)
     return ranked[:top_k]
-
+import openai
+openai.api_key = "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"
 def ai_chatbot_response(user_email: str, message: str) -> str:
     user = next((u for u in get_users() if u['email'].lower()==user_email.lower()), {})
     favorites = [b['title'] for b in get_books() if b['id'] in user.get('favorites', [])]
