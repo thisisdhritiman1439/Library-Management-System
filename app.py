@@ -285,59 +285,32 @@ def chatbot_response_for_user(user_email: str, message: str) -> str:
 # UI helpers
 # -------------------------
 def book_card_ui(book: Dict[str,Any], current_user_email: str):
-    issue_key = f"issue_{book['id']}"
-    confirm_key = f"confirm_{book['id']}"
-    
-    # Initialize the confirmation flag if not set
-    if confirm_key not in st.session_state:
-        st.session_state[confirm_key] = False
-
-        cols = st.columns([1,3])
-        with cols[0]:
-            if book.get('cover_url'):
-                try:
-                    st.image(book['cover_url'], width=110)
-                except:
-                    st.write("[No Image]")
-    
-        with cols[1]:
-            st.markdown(f"### {book['title']}")
-            genres = book.get('genre', [])
-            if isinstance(genres, str):
-                genres = [genres]
-            st.markdown(f"**Genre:** {', '.join(genres)}")
-            st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
-            st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
-    
-            c1,c2,c3 = st.columns([1,1,1])
-            with c1:
-                if book.get('available', False):
-                    # Step 1: Click Issue button -> show confirmation
-                    if st.button("📥 Issue", key=issue_key):
-                        st.session_state[confirm_key] = True  # flag to show confirmation
-    
-                    # Step 2: Show confirmation only if user clicked Issue
-                    if st.session_state[confirm_key]:
-                        st.write(f"Do you want to issue '{book['title']}'?")
-                        choice = st.radio(
-                            "Choose an option:",
-                            options=["No", "Yes"],
-                            key=f"radio_{book['id']}"
-                        )
-                        if st.button("Confirm", key=f"confirm_btn_{book['id']}"):
-                            if choice == "Yes":
-                                ok, msg = issue_book_to_user(current_user_email, book['id'])
-                                if ok:
-                                    st.success(msg)
-                                else:
-                                    st.error(msg)
-                            else:
-                                st.info("Issue cancelled.")
-                            # Reset the flag after confirming
-                            st.session_state[confirm_key] = False
-                            st.rerun()
-
-
+    cols = st.columns([1,3])
+    with cols[0]:
+        if book.get('cover_url'):
+            try:
+                st.image(book['cover_url'], width=110)
+            except:
+                st.write("[No Image]")
+    with cols[1]:
+        st.markdown(f"### {book['title']}")
+        genres = book.get('genre', [])
+        if isinstance(genres, str):
+            genres = [genres]  # wrap string in list
+        st.markdown(f"**Genre:** {', '.join(genres)}")
+        st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
+        st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
+        c1,c2,c3 = st.columns([1,1,1])
+        with c1:
+            if book.get('available', False):
+                if st.button("📥 Issue", key=f"issue_{book['id']}"):
+                    if st.confirm(f"Are you sure you want to issue '{book['title']}'?"):
+                        ok,msg = issue_book_to_user(current_user_email, book['id'])
+                        if ok:
+                            st.success(msg)
+                        else:
+                            st.error(msg)
+                        st.rerun()
         with c2:
             if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}"):
                 users = get_users()
