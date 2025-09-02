@@ -14,7 +14,8 @@ BOOKS_FILE = "books_data.json"
 USERS_FILE = "users.json"
 ISSUED_FILE = "issued_books.json"
 
-FINE_PER_DAY = 10import streamlit as st
+FINE_PER_DAY = 10
+import streamlit as st
 import json
 import os
 import shutil
