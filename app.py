@@ -808,7 +808,7 @@ def app():
 
     # Chatbot
     st.sidebar.markdown("### 🤖 Chatbot Librarian")
-    chat_q = st.sidebar.text_input("Ask (e.g. 'Recommend Python books')", key="chat_q")
+    chat_q = st.sidebar.text_input("Ask (e.g. 'Recommend Python books')", key="chat_q_sidebar")
     if st.sidebar.button("Ask"):
         if chat_q:
             st.sidebar.info(chatbot_response_for_user(current_user['email'], chat_q))
