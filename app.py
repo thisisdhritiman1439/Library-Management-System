@@ -4,6 +4,7 @@ import os
 import shutil
 import time
 import hashlib
+import re  
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Any
 
@@ -21,6 +22,20 @@ APP_TITLE = "📚 Library Management System"
 # -------------------------
 # Safe JSON helpers
 # -------------------------
+
+def is_strong_password(password: str) -> (bool, str):
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long."
+    if not re.search(r"[A-Z]", password):
+        return False, "Password must include at least one uppercase letter."
+    if not re.search(r"[a-z]", password):
+        return False, "Password must include at least one lowercase letter."
+    if not re.search(r"[0-9]", password):
+        return False, "Password must include at least one number."
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False, "Password must include at least one special character."
+    return True, ""
+
 def backup_corrupt_file(path: str):
     try:
         ts = int(time.time())
@@ -142,21 +157,31 @@ def save_issued(data: List[Dict[str,Any]]):
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
-def signup_user(name: str, mobile: str, email: str, password: str, role: str) -> (bool,str):
+def signup_user(name: str, mobile: str, email: str, password: str, role: str) -> (bool, str):
     users = get_users()
     email_l = email.strip().lower()
+
+    # ✅ Strong password validation
+    ok, msg = is_strong_password(password)
+    if not ok:
+        return False, msg
+
     if any(u['email'].lower() == email_l for u in users):
         return False, "Email already registered."
-    users.append({
-        "name": name.strip(),
-        "mobile": mobile.strip(),
+
+    user = {
+        "name": name,
+        "mobile": mobile,
         "email": email_l,
         "password_hash": hash_password(password),
         "role": role,
-        "favorites": []
-    })
+        "favorites": [],
+        "issued": []
+    }
+    users.append(user)
     save_users(users)
-    return True, "Account created."
+    return True, "Account created successfully."
+
 
 def login_user(email: str, password: str):
     users = get_users()
@@ -399,9 +424,30 @@ def book_card_ui(book: Dict[str, Any], current_user_email: str):
 # -------------------------
 def app():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
+    page_bg = """
+    <style>
+    [data-testid="stAppViewContainer"] {
+        background-image: url("https://plus.unsplash.com/premium_photo-1677567996070-68fa4181775a?w=2400&auto=format&fit=crop&q=60&ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzU2ODkxNzc4fA&ixlib=rb-4.1.0");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    [data-testid="stHeader"] {
+        background: rgba(0,0,0,0);
+    }
+    h1 {
+        color: white;
+        text-shadow: 2px 2px 4px #000000;
+    }
+    </style>
+    """
+    st.markdown(page_bg, unsafe_allow_html=True)
+    
+    st.title("📚 Welcome to the Library Management System")
+
     st.title(APP_TITLE)
     bootstrap_files()
-    if 'user' not in st.session_state:
+    if 'User' not in st.session_state:
         st.session_state['user'] = None
     if 'view_book' not in st.session_state:
         st.session_state['view_book'] = None
@@ -575,10 +621,15 @@ def app():
                     st.error("Current password incorrect.")
                 elif new != confirm:
                     st.error("New passwords do not match.")
-                else:
-                    u['password_hash'] = hash_password(new)
-                    save_users(users)
-                    st.success("Password changed successfully.")
+                elif:
+                    ok, msg = is_strong_password(new)
+                    if not ok:
+                        st.error(msg)
+                    else:
+                        u['password_hash'] = hash_password(new)
+                        save_users(users)
+                        st.success("Password changed successfully.")
+            
 
 # -------------------------
 # Entry point
