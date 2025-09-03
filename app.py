@@ -4,6 +4,7 @@ import os
 import shutil
 import time
 import hashlib
+import re
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Any
 
@@ -21,6 +22,19 @@ APP_TITLE = "📚 Library Management System"
 # -------------------------
 # Safe JSON helpers
 # -------------------------
+def is_strong_password(password: str) -> (bool, str):
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters long."
+    if not re.search(r"[A-Z]", password):
+        return False, "Password must include at least one uppercase letter."
+    if not re.search(r"[a-z]", password):
+        return False, "Password must include at least one lowercase letter."
+    if not re.search(r"[0-9]", password):
+        return False, "Password must include at least one number."
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False, "Password must include at least one special character."
+    return True, ""
+    
 def backup_corrupt_file(path: str):
     try:
         ts = int(time.time())
@@ -145,6 +159,10 @@ def hash_password(password: str) -> str:
 def signup_user(name: str, mobile: str, email: str, password: str, role: str) -> (bool,str):
     users = get_users()
     email_l = email.strip().lower()
+    ok, msg = is_strong_password(password)
+    if not ok:
+        return False, msg
+
     if any(u['email'].lower() == email_l for u in users):
         return False, "Email already registered."
     users.append({
