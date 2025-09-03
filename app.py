@@ -16,7 +16,7 @@ ISSUED_FILE = "issued_books.json"
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
-APP_TITLE = "📚 Smart Library System"
+APP_TITLE = "📚 Library Management System"
 
 # -------------------------
 # Safe JSON helpers
@@ -324,14 +324,18 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                         ok, msg = issue_book_to_user(current_user_email, book['id'])
                         if ok:
                             st.success(msg)
+                            # Update availability so Issue button disappears
+                            st.session_state[confirm_flag] = False
+                            st.rerun()
                         else:
                             st.error(msg)
                     else:
                         st.info("Issue cancelled.")
-    
-                    # Reset and refresh
-                    st.session_state[confirm_flag] = False
-                    st.rerun()
+                        st.session_state[confirm_flag] = False
+                        st.rerun()
+        else:
+            st.info("❌ Already issued by another user")
+
         with c2:
             if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}"):
                 users = get_users()
