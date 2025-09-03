@@ -17,7 +17,7 @@ ISSUED_FILE = "issued_books.json"
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
-APP_TITLE = "📚 Welcome To Library Management System"
+APP_TITLE = "📚 Library Management System"
 
 # -------------------------
 # Safe JSON helpers
@@ -325,10 +325,10 @@ def book_card_ui(book: Dict[str, Any], current_user_email: str):
         genres = book.get('genre', [])
         if isinstance(genres, str):
             genres = [genres]
-        st.markdown(f"**Genre:** {', '.join(genres)}")
+        st.markdown(f"*Genre:* {', '.join(genres)}")
         desc = book.get('description', '')
         st.write(desc[:400] + ("…" if len(desc) > 400 else ""))
-        st.write(f"**Available:** {'✅ Yes' if book.get('available', True) else '❌ No'}")
+        st.write(f"*Available:* {'✅ Yes' if book.get('available', True) else '❌ No'}")
 
         c1, c2, c3 = st.columns([1, 1, 1])
 
@@ -399,16 +399,16 @@ def book_card_ui(book: Dict[str, Any], current_user_email: str):
             with st.expander("🔎 Overview"):
                 if book.get('cover_url'):
                     st.image(book['cover_url'], width=150)
-                st.markdown(f"**Title:** {book.get('title','')}")
-                st.markdown(f"**Author:** {book.get('author','')}")
+                st.markdown(f"*Title:* {book.get('title','')}")
+                st.markdown(f"*Author:* {book.get('author','')}")
                 genres2 = book.get('genre', [])
                 if isinstance(genres2, str):
                     genres2 = [genres2]
-                st.markdown(f"**Genre:** {', '.join(genres2)}")
-                st.markdown("**Description:**")
+                st.markdown(f"*Genre:* {', '.join(genres2)}")
+                st.markdown("*Description:*")
                 st.write(book.get('description',''))
                 if book.get('index'):
-                    st.markdown("**Index:**")
+                    st.markdown("*Index:*")
                     for idx in book.get('index', []):
                         st.write(f"- {idx}")
 
@@ -417,25 +417,6 @@ def book_card_ui(book: Dict[str, Any], current_user_email: str):
 # -------------------------
 def app():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
-    st.markdown("""
-    <style>
-    .login-box {
-        max-width: 400px;       /* smaller width */
-        margin: auto;           /* center horizontally */
-        margin-top: 80px;       /* push down vertically */
-        background-color: black;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
-        color: white;
-        text-align: center;
-    }
-    .login-box h2, .login-box label {
-        color: white !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
     st.title(APP_TITLE)
     bootstrap_files()
     if 'user' not in st.session_state:
@@ -444,76 +425,41 @@ def app():
         st.session_state['view_book'] = None
 
     # --------- Login/Signup ---------
-if st.session_state['user'] is None:
-    st.markdown('<div class="login-box">', unsafe_allow_html=True)
-
-    st.markdown("## 🔐 Welcome To Library Management System")
-    choice = st.selectbox("Action", ["Login", "Sign Up"], key="auth_choice")
-
-    if choice == "Login":
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
-        if st.button("Login", use_container_width=True):
-            user = next((u for u in users if u["email"] == email and u["password"] == password), None)
-            if user:
-                st.session_state['user'] = user
-                st.success("✅ Login successful!")
-                st.rerun()
-            else:
-                st.error("❌ Invalid email or password")
-
-    elif choice == "Sign Up":
-        name = st.text_input("Full Name")
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
-        role = st.selectbox("Role", ["user", "librarian"])
-        if st.button("Sign Up", use_container_width=True):
-            if any(u["email"] == email for u in users):
-                st.error("❌ Email already registered")
-            else:
-                new_user = {"name": name, "email": email, "password": password, "role": role, "borrowed": [], "favorites": []}
-                users.append(new_user)
-                save_json(USERS_FILE, users)
-                st.success("✅ Account created successfully! Please login.")
-                st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.stop()
-
-
-    
-    if choice=="Sign Up":
-        st.header("Create account")
-        name = st.text_input("Full name", key="su_name")
-        mobile = st.text_input("Mobile number", key="su_mobile")
-        email = st.text_input("Email", key="su_email")
-        password = st.text_input("Password", type="password", key="su_pass")
-        role = st.selectbox("Role", ["user","librarian"], key="su_role")
-        if st.button("Create Account"):
-            ok,msg = signup_user(name,mobile,email,password,role)
-            if ok: st.success(msg + " Please login.")
-            else: st.error(msg)
-    else:
-        st.header("Login")
-        email = st.text_input("Email", key="li_email")
-        password = st.text_input("Password", type="password", key="li_pass")
-        if st.button("Login"):
-            user = login_user(email,password)
-            if user:
-                st.session_state['user'] = user
-                st.success(f"Welcome {user['name']}")
-                st.rerun()
-            else:
-                st.error("Invalid credentials")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.stop()
-
+    if st.session_state['user'] is None:
+        left,right = st.columns([2,1])
+        with left:
+            st.markdown("Welcome — login or sign up. Demo: user@example.com / user123")
+        with right:
+            choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
+        if choice=="Sign Up":
+            st.header("Create account")
+            name = st.text_input("Full name", key="su_name")
+            mobile = st.text_input("Mobile number", key="su_mobile")
+            email = st.text_input("Email", key="su_email")
+            password = st.text_input("Password", type="password", key="su_pass")
+            role = st.selectbox("Role", ["user","librarian"], key="su_role")
+            if st.button("Create Account"):
+                ok,msg = signup_user(name,mobile,email,password,role)
+                if ok: st.success(msg + " Please login.")
+                else: st.error(msg)
+        else:
+            st.header("Login")
+            email = st.text_input("Email", key="li_email")
+            password = st.text_input("Password", type="password", key="li_pass")
+            if st.button("Login"):
+                user = login_user(email,password)
+                if user:
+                    st.session_state['user'] = user
+                    st.success(f"Welcome {user['name']}")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials")
+        st.stop()
 
     current_user = st.session_state['user']
 
     st.sidebar.markdown(f"### 👤 {current_user['name']}")
-    st.sidebar.markdown(f"**Role:** {current_user['role'].capitalize()}")
+    st.sidebar.markdown(f"*Role:* {current_user['role'].capitalize()}")
     st.sidebar.markdown("---")
 
     # Notifications
@@ -559,8 +505,8 @@ if st.session_state['user'] is None:
         st.header("📊 Dashboard")
         users = get_users()
         u = next((x for x in users if x['email'].lower()==current_user['email'].lower()), current_user)
-        st.write(f"- ⭐ Favorites: **{len(u.get('favorites', []))}**")
-        st.write(f"- 📥 Active borrowed books: **{len(user_active_issues(current_user['email']))}**")
+        st.write(f"- ⭐ Favorites: *{len(u.get('favorites', []))}*")
+        st.write(f"- 📥 Active borrowed books: *{len(user_active_issues(current_user['email']))}*")
 
     elif page=="All Books":
         st.header("📚 All Books")
@@ -580,11 +526,11 @@ if st.session_state['user'] is None:
             if b:
                 st.subheader(f"📖 Detailed Overview: {b['title']}")
                 st.image(b.get('cover_url',''), width=150)
-                st.markdown(f"**Author:** {b.get('author','')}")
-                st.markdown(f"**Genre:** {', '.join(b.get('genre',[]))}")
-                st.markdown("**Description:**")
+                st.markdown(f"*Author:* {b.get('author','')}")
+                st.markdown(f"*Genre:* {', '.join(b.get('genre',[]))}")
+                st.markdown("*Description:*")
                 st.write(b.get('description',''))
-                st.markdown("**Index:**")
+                st.markdown("*Index:*")
                 for idx in b.get('index',[]): st.write(f"- {idx}")
             if st.button("Close Overview", key="close_overview"):
                 st.session_state['view_book'] = None
@@ -609,13 +555,13 @@ if st.session_state['user'] is None:
             if not b:
                 continue
             st.markdown(f"### {b['title']} by {b['author']}")
-            st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
+            st.write(f"*Issued on:* {rec['issue_date']}  |  *Due:* {rec['due_date']}")
             fine_now = calculate_fine_for_record(rec)
             if fine_now > 0:
                 st.warning(f"⚠ Fine so far: ₹{fine_now}")
 
             # ✅ FIXED unique key for return button
-            if st.button("Return", key=f"return_{rec['book_id']}_{current_user['email']}_{rec['issue_date']}"):
+            if st.button("Return", key=f"return_{rec['book_id']}{current_user['email']}{rec['issue_date']}"):
                 ok, msg, fine = return_book_from_user(current_user['email'], rec['book_id'])
                 if ok:
                     st.success(f"{msg}. Fine: ₹{fine}")
@@ -681,8 +627,8 @@ if st.session_state['user'] is None:
                 b = next((x for x in get_books() if x['id']==rec['book_id']), None)
                 if not b: continue
                 st.markdown(f"### {b['title']} by {b['author']}")
-                st.write(f"**Issued to:** {rec['user_email']}")
-                st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
+                st.write(f"*Issued to:* {rec['user_email']}")
+                st.write(f"*Issued on:* {rec['issue_date']}  |  *Due:* {rec['due_date']}")
                 if rec['returned']:
                     st.success(f"✅ Returned on {rec['return_date']}")
                 else:
@@ -692,10 +638,10 @@ if st.session_state['user'] is None:
 
     elif page=="Account":
         st.header("👤 Account Details")
-        st.write(f"**Name:** {current_user['name']}")
-        st.write(f"**Email:** {current_user['email']}")
-        st.write(f"**Mobile:** {current_user['mobile']}")
-        st.write(f"**Role:** {current_user['role']}")
+        st.write(f"*Name:* {current_user['name']}")
+        st.write(f"*Email:* {current_user['email']}")
+        st.write(f"*Mobile:* {current_user['mobile']}")
+        st.write(f"*Role:* {current_user['role']}")
         if st.button("Change Password", key="chg_pass_btn"):
             old = st.text_input("Current password", type="password", key="old_pass")
             new = st.text_input("New password", type="password", key="new_pass")
@@ -708,17 +654,12 @@ if st.session_state['user'] is None:
                 elif new != confirm:
                     st.error("New passwords do not match.")
                 else:
-                    ok, msg = is_strong_password(new)
-                    if not ok:
-                        st.error(msg)
-                    else:
-                        u['password_hash'] = hash_password(new)
-                        save_users(users)
-                        st.success("Password changed successfully.")
-
+                    u['password_hash'] = hash_password(new)
+                    save_users(users)
+                    st.success("Password changed successfully.")
 
 # -------------------------
 # Entry point
 # -------------------------
-if __name__=="__main__":
+if _name=="main_":
     app()
