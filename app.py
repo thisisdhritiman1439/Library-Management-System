@@ -5,6 +5,9 @@ import shutil
 import time
 import hashlib
 import re
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import datetime
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Any
 
@@ -22,6 +25,27 @@ APP_TITLE = "📚 Library Management System"
 # -------------------------
 # Safe JSON helpers
 # -------------------------
+
+scope = ["https://spreadsheets.google.com/feeds",
+         "https://www.googleapis.com/auth/spreadsheets",
+         "https://www.googleapis.com/auth/drive.file",
+         "https://www.googleapis.com/auth/drive"]
+
+# Load credentials JSON from the file you downloaded earlier.
+# Ensure 'credentials.json' is in the same directory as your app.py,
+# or provide the full path to the file.
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+
+# Authorize gspread with the loaded credentials.
+# This creates a client object that can interact with Google Sheets.
+client = gspread.authorize(creds)
+
+# Open your Google Sheet.
+# Replace "YOUR_SHEET_ID_HERE" with the actual ID of your Google Sheet.
+# You can find the Sheet ID in the URL of your Google Sheet (e.g., in
+# https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit).
+SHEET_ID = "https://docs.google.com/spreadsheets/d/1HMTKp9UITW6-h2M5UCYn3xAGSCKCimhtBvGuXiUm_nU/edit?gid=0#gid=0"
+sheet = client.open_by_key(SHEET_ID).sheet1 
 def is_strong_password(password: str) -> (bool, str):
     if len(password) < 8:
         return False, "Password must be at least 8 characters long."
@@ -138,8 +162,9 @@ def get_books() -> List[Dict[str,Any]]:
 def save_books(data: List[Dict[str,Any]]):
     save_json(BOOKS_FILE, data)
 
-def get_users() -> List[Dict[str,Any]]:
-    return load_json(USERS_FILE, [])
+def get_users():
+    records = sheet.get_all_records()
+    return records
 
 def save_users(data: List[Dict[str,Any]]):
     save_json(USERS_FILE, data)
@@ -156,33 +181,18 @@ def save_issued(data: List[Dict[str,Any]]):
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
-def signup_user(name: str, mobile: str, email: str, password: str, role: str) -> (bool,str):
-    users = get_users()
-    email_l = email.strip().lower()
-    ok, msg = is_strong_password(password)
-    if not ok:
-        return False, msg
-
-    if any(u['email'].lower() == email_l for u in users):
-        return False, "Email already registered."
-    users.append({
-        "name": name.strip(),
-        "mobile": mobile.strip(),
-        "email": email_l,
-        "password_hash": hash_password(password),
-        "role": role,
-        "favorites": []
-    })
-    save_users(users)
+def signup_user(email, name, password, role="student"):
+    created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    # Insert into Google Sheet
+    sheet.append_row([email, name, password, role, created_at])
     return True, "Account created."
 
-def login_user(email: str, password: str):
+def login_user(email, password):
     users = get_users()
-    email_l = email.strip().lower()
-    phash = hash_password(password)
-    for u in users:
-        if u['email'].lower() == email_l and u['password_hash'] == phash:
-            return {k: v for k,v in u.items() if k != 'password_hash'}
+    for user in users:
+        if user['email'] == email and user['password'] == password:
+            return user
     return None
 
 # -------------------------
