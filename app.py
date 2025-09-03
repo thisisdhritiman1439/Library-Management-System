@@ -452,7 +452,6 @@ def app():
     """
     st.markdown(page_bg, unsafe_allow_html=True)
 
-    st.title(APP_TITLE)
     bootstrap_files()
     if 'User' not in st.session_state:
         st.session_state['user'] = None
