@@ -431,7 +431,7 @@ def app():
     <style>
     /* Full-page background */
     .stApp {
-        background: url("https://images.unsplash.com/photo-1678138458795-793494b64ea7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGJsdXIlMjBsaWJyYXJ5JTIwd2l0aCUyMGJsYWNrJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D") no-repeat center center fixed;
+        background: url("https://images.unsplash.com/photo-1606733803396-1d028f0e6f43?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center fixed;
         background-size: cover;
     }
     
@@ -461,40 +461,60 @@ def app():
 
     # --------- Login/Signup ---------
     if st.session_state['user'] is None:
-        # Background + centering
+        # Background + Centering
         left, center, right = st.columns([2,1.5,2])
         with center:
+            # Welcome message
+            st.markdown(
+                "<h2 style='text-align: center; color: white; "
+                "background-color: black; padding: 12px; "
+                "border-radius: 10px;'>📚 Welcome to Library Management System</h2>",
+                unsafe_allow_html=True
+            )
+    
+            # Auth choice (Login / Sign Up)
             choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
     
             if choice == "Sign Up":
-                st.header("Create account")
+                st.markdown(
+                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
+                    unsafe_allow_html=True
+                )
+                st.subheader("📝 Create Account", divider="rainbow")
                 name = st.text_input("Full name", key="su_name")
                 mobile = st.text_input("Mobile number", key="su_mobile")
                 email = st.text_input("Email", key="su_email")
                 password = st.text_input("Password", type="password", key="su_pass")
                 role = st.selectbox("Role", ["user","librarian"], key="su_role")
                 if st.button("Create Account"):
-                    ok,msg = signup_user(name,mobile,email,password,role)
+                    ok, msg = signup_user(name, mobile, email, password, role)
                     if ok:
                         st.success(msg + " Please login.")
                     else:
                         st.error(msg)
+                st.markdown("</div>", unsafe_allow_html=True)
     
             else:  # LOGIN
-                st.header("Login")
+                st.markdown(
+                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
+                    unsafe_allow_html=True
+                )
+                st.subheader("🔑 Login", divider="rainbow")
                 email = st.text_input("Email", key="li_email")
                 password = st.text_input("Password", type="password", key="li_pass")
                 if st.button("Login", key="login_btn"):
-                    user = login_user(email,password)
+                    user = login_user(email, password)
                     if user:
                         st.session_state['user'] = user
                         st.success(f"Welcome {user['name']}")
-                        time.sleep(1)   # short delay so user sees the message
-                        st.rerun()      # reload and go to dashboard
+                        time.sleep(1)
+                        st.rerun()
                     else:
                         st.error("Invalid credentials")
+                st.markdown("</div>", unsafe_allow_html=True)
     
-        st.stop()   # ✅ ensures rest of app doesn't load until logged in
+        st.stop()
+
 
 
     current_user = st.session_state['user']
