@@ -71,16 +71,17 @@ The system supports both **Students** and **Librarians**, offering secure login,
 
 ## 📂 Folder Structure
 
+```
 📁 Library-Management-System/
 │
-├── 📄 app.py # Main Streamlit application
-├── 📁 assets/ # Book cover images
-├── 📄 books.json # Book data with descriptions & availability
-├── 📄 users.json # User data (students/librarians)
-├── 📄 issued_books.json # Issued book records
-├── 📄 requirements.txt # Python dependencies
-└── 📄 README.md # Project documentation
-
+├── 📄 app.py                  # Main Streamlit application
+├── 📁 assets/                 # Book cover images
+├── 📄 books.json              # Book data with descriptions & availability
+├── 📄 users.json              # User data (students/librarians)
+├── 📄 issued_books.json       # Issued book records
+├── 📄 requirements.txt        # Python dependencies
+└── 📄 README.md               # Project documentation
+```
 
 ---
 
@@ -94,83 +95,84 @@ The system supports both **Students** and **Librarians**, offering secure login,
 ## 📌 How to Run Locally
 
 1. Clone this repo:
+```bash
 git clone https://github.com/thisisdhritiman1439/Library-Management-System.git
 cd Library-Management-System
+```
 
 2. Install required packages:
+```bash
 pip install -r requirements.txt
+```
 
 3. Run the app:
+```bash
 streamlit run app.py
+```
 
-📂 Demo Credentials
+---
+
+## 📂 Demo Credentials
 
 Use these demo accounts for testing:
 
-Librarian
+- **Librarian**
+  - Email: `librarian@example.com`
+  - Password: `admin123`
 
-Email: librarian@example.com
+- **User**
+  - Email: `user@example.com`
+  - Password: `user123`
 
-Password: admin123
+---
 
-User
+## 📷 Screenshots
 
-Email: user@example.com
+> Add screenshots in the `assets/` folder and embed them here:
 
-Password: user123
+* ✅ Login & Sign Up  
+* 📚 View All Books  
+* 📘 Book Description + Index  
+* ➕ Add/Delete Book  
+* 📥 Issue/Return Book  
+* ⭐ Favorites  
+* 🤖 Recommendation Panel  
+* 💬 Chatbot Assistant  
+* 📊 Analytics Dashboard  
 
-📷 Screenshots
+---
 
-Add screenshots in the assets/ folder and embed them here:
+## 📈 Future Enhancements
 
-✅ Login & Sign Up
+* 📧 Email/OTP-based authentication  
+* 🔍 Advanced search & filter system  
+* 🧾 Export issued book reports to CSV/Excel  
+* 📊 More detailed analytics dashboard for librarians  
+* ☁️ Database integration (SQLite/PostgreSQL)  
+* 📱 Mobile-friendly responsive design  
 
-📚 View All Books
+---
 
-📘 Book Description + Index
+## 👨‍💻 Developers
 
-➕ Add/Delete Book
+| Name                     | Role                          |
+| ------------------------ | ----------------------------- |
+| Khandakar Nafees Hossain | Project Lead & Developer      |
+| Dhritiman Bera           | Developer & Designer          |
+| Parthib Mahapatra        | Tester & Deployment           |
+| Mr. Subhabrata Sengupta  | Faculty Guide                 |
+| Dr. Rupayan Das          | Faculty Guide                 |
 
-📥 Issue/Return Book
+---
 
-⭐ Favorites
+## 📜 License
 
-🤖 Recommendation Panel
+This project is licensed under the [MIT License](LICENSE).
 
-💬 Chatbot Assistant
+---
 
-📊 Analytics Dashboard
+## 🤝 Acknowledgments
 
-📈 Future Enhancements
-
-📧 Email/OTP-based authentication
-
-🔍 Advanced search & filter system
-
-🧾 Export issued book reports to CSV/Excel
-
-📊 More detailed analytics dashboard for librarians
-
-☁️ Database integration (SQLite/PostgreSQL)
-
-📱 Mobile-friendly responsive design
-
-👨‍💻 Developers
-Name	Role
-Khandakar Nafees Hossain	Project Lead & Developer
-Dhritiman Bera	Developer & Designer
-Parthib Mahapatra	Tester & Deployment
-Mr. Subhabrata Sengupta	Faculty Guide
-Dr. Rupayan Das	Faculty Guide
-📜 License
-
-This project is licensed under the MIT License
-.
-
-🤝 Acknowledgments
-
-Built with ❤️ using Python and Streamlit
-
-Inspired by the real-world challenges of manual library systems
-
-Enhanced with modern features like recommendations
+* Built with ❤️ using Python and Streamlit  
+* Inspired by the real-world challenges of manual library systems  
+* Enhanced with modern features like recommendations, chatbot, and analytics  
