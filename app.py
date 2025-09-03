@@ -1,3 +1,4 @@
+pip install gspread oauth2client
 import streamlit as st
 import json
 import os
