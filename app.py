@@ -453,13 +453,12 @@ def app():
     st.markdown(page_bg, unsafe_allow_html=True)
 
     bootstrap_files()
-    if 'User' not in st.session_state:
-        st.session_state['user'] = None
-    if 'view_book' not in st.session_state:
-        st.session_state['view_book'] = None
+    if "user" not in st.session_state:
+        st.session_state["user"] = None
+    if "view_book" not in st.session_state:
+        st.session_state["view_book"] = None
     if "logged_in" not in st.session_state:
         st.session_state["logged_in"] = False
-
 
     # --------- Login/Signup ---------
     if not st.session_state["logged_in"]:
@@ -514,16 +513,18 @@ def app():
                         st.rerun()   # rerun immediately to load dashboard
                     else:
                         st.error("Invalid credentials")
-
+                        st.stop()
                 st.markdown("</div>", unsafe_allow_html=True)
     
-        st.stop()
+             st.stop()
 
     current_user = st.session_state.get("user", None)
     
-    if current_user is not None:
-        st.sidebar.markdown(f"### 👤 {current_user['name']}")
-        st.sidebar.write(f"Role: {current_user['role']}")
+    if current_user is None:
+        st.error("⚠️ Please log in again.")
+        st.session_state["logged_in"] = False
+        st.rerun()
+
     else:
         st.sidebar.warning("⚠️ No user logged in")
 
