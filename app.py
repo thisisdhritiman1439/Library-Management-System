@@ -426,7 +426,7 @@ def app():
 # -------------------------
 # Custom UI Styling
 # -------------------------
-    st.set_page_config(page_title=APP_TITLE, layout="wide")
+    # st.set_page_config(page_title=APP_TITLE, layout="wide")
     page_bg = """
     <style>
     /* Full-page background */
@@ -461,13 +461,12 @@ def app():
 
     # --------- Login/Signup ---------
     if st.session_state['user'] is None:
-        # Background + Centering
         left, center, right = st.columns([2,1.5,2])
         with center:
-            # Welcome message
+            # Welcome heading
             st.markdown(
                 "<h2 style='text-align: center; color: white; "
-                "background-color: black; padding: 12px; "
+                "background-color: black; padding: 15px; "
                 "border-radius: 10px;'>📚 Welcome to Library Management System</h2>",
                 unsafe_allow_html=True
             )
@@ -475,14 +474,38 @@ def app():
             # Auth choice (Login / Sign Up)
             choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
     
+            # Box styling wrapper
+            st.markdown(
+                """
+                <style>
+                .auth-box {
+                    background-color: black;
+                    color: white;
+                    padding: 20px;
+                    border-radius: 12px;
+                }
+                .auth-box label {
+                    color: white !important;
+                    font-weight: bold;
+                }
+                .auth-box input {
+                    background-color: #222;
+                    color: white !important;
+                    border-radius: 5px;
+                    padding: 6px;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+    
+            # Wrap Login/Signup forms inside auth-box
+            st.markdown('<div class="auth-box">', unsafe_allow_html=True)
+    
             if choice == "Sign Up":
-                st.markdown(
-                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
-                    unsafe_allow_html=True
-                )
-                st.subheader("📝 Create Account", divider="rainbow")
-                name = st.text_input("Full name", key="su_name")
-                mobile = st.text_input("Mobile number", key="su_mobile")
+                st.subheader("📝 Create Account")
+                name = st.text_input("Full Name", key="su_name")
+                mobile = st.text_input("Mobile Number", key="su_mobile")
                 email = st.text_input("Email", key="su_email")
                 password = st.text_input("Password", type="password", key="su_pass")
                 role = st.selectbox("Role", ["user","librarian"], key="su_role")
@@ -492,14 +515,9 @@ def app():
                         st.success(msg + " Please login.")
                     else:
                         st.error(msg)
-                st.markdown("</div>", unsafe_allow_html=True)
     
             else:  # LOGIN
-                st.markdown(
-                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
-                    unsafe_allow_html=True
-                )
-                st.subheader("🔑 Login", divider="rainbow")
+                st.subheader("🔑 Login")
                 email = st.text_input("Email", key="li_email")
                 password = st.text_input("Password", type="password", key="li_pass")
                 if st.button("Login", key="login_btn"):
@@ -511,11 +529,10 @@ def app():
                         st.rerun()
                     else:
                         st.error("Invalid credentials")
-                st.markdown("</div>", unsafe_allow_html=True)
+    
+            st.markdown('</div>', unsafe_allow_html=True)
     
         st.stop()
-
-
 
     current_user = st.session_state['user']
 
