@@ -303,18 +303,17 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         c1,c2,c3 = st.columns([1,1,1])
         with c1:
             if book.get('available', False):
-                st.write(f"Are you sure you want to issue '{book['title']}'?")
-                choice = st.radio("Choose an option:", ["No", "Yes"], key=f"radio_{book['id']}")
-            if st.button("Confirm", key=f"confirm_btn_{book['id']}"):
-                if choice == "Yes":
-                    ok, msg = issue_book_to_user(current_user_email, book['id'])
-                    if ok:
-                        st.success(msg)
-                    else:
-                        st.error(msg)
-                else:
-                    st.info("Issue cancelled.")
-            st.rerun()
+st.write(f"Are you sure you want to issue '{book['title']}'?")
+choice = st.radio("Choose an option:", ["No", "Yes"], key=f"radio_{book['id']}")
+if st.button("Confirm", key=f"confirm_btn_{book['id']}"):
+    if choice == "Yes":
+        ok, msg = issue_book_to_user(current_user_email, book['id'])
+        if ok:
+            st.success(msg)
+        else:
+            st.error(msg)
+    else:
+        st.info("Issue cancelled.")
         with c2:
             if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}"):
                 users = get_users()
