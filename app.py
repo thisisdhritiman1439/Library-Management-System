@@ -559,6 +559,65 @@ def app():
             book_card_ui(b, current_user['email'])
             st.divider()
 
+        elif page=="Add Book" and current_user['role']=="librarian":
+        st.header("➕ Add a New Book")
+        title = st.text_input("Title")
+        author = st.text_input("Author")
+        cover_url = st.text_input("Cover Image URL (optional)")
+        description = st.text_area("Description")
+        genres = st.text_input("Genres (comma separated)")
+        keywords = st.text_input("Keywords (comma separated)")
+
+        if st.button("Add Book"):
+            books = get_books()
+            new_id = max([b['id'] for b in books], default=0) + 1
+            new_book = {
+                "id": new_id,
+                "title": title.strip(),
+                "author": author.strip(),
+                "cover_url": cover_url.strip(),
+                "description": description.strip(),
+                "index": [],
+                "genre": [g.strip() for g in genres.split(",") if g.strip()],
+                "keywords": [k.strip() for k in keywords.split(",") if k.strip()],
+                "available": True,
+                "added_on": str(date.today())
+            }
+            books.append(new_book)
+            save_books(books)
+            st.success(f"Book '{title}' added successfully ✅")
+
+    elif page=="Delete Book" and current_user['role']=="librarian":
+        st.header("🗑 Delete a Book")
+        books = get_books()
+        titles = {b['title']: b['id'] for b in books}
+        choice = st.selectbox("Select book to delete", [""] + list(titles.keys()))
+        if choice and st.button("Delete"):
+            books = [b for b in books if b['id'] != titles[choice]]
+            save_books(books)
+            st.success(f"Book '{choice}' deleted successfully ✅")
+            st.rerun()
+
+    elif page=="Issued Overview" and current_user['role']=="librarian":
+        st.header("📖 Issued Books Overview")
+        issued = get_issued()
+        if not issued:
+            st.info("No issued books yet.")
+        else:
+            for rec in issued:
+                b = next((x for x in get_books() if x['id']==rec['book_id']), None)
+                if not b: continue
+                st.markdown(f"### {b['title']} by {b['author']}")
+                st.write(f"**Issued to:** {rec['user_email']}")
+                st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
+                if rec['returned']:
+                    st.success(f"✅ Returned on {rec['return_date']}")
+                else:
+                    fine_now = calculate_fine_for_record(rec)
+                    if fine_now > 0:
+                        st.warning(f"⚠ Overdue — Fine so far: ₹{fine_now}")
+
+
     elif page=="Account":
         st.header("👤 Account Details")
         st.write(f"**Name:** {current_user['name']}")
