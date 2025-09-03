@@ -401,7 +401,7 @@ def app():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
     st.title(APP_TITLE)
     bootstrap_files()
-    if 'User' not in st.session_state:
+    if 'user' not in st.session_state:
         st.session_state['user'] = None
     if 'view_book' not in st.session_state:
         st.session_state['view_book'] = None
@@ -530,21 +530,16 @@ def app():
     elif page=="Issued Books":
         st.header("📥 Issued Books")
         active = user_active_issues(current_user['email'])
-        if not active:
-            st.info("No active issues.")
+        if not active: st.info("No active issues.")
         for rec in active:
             b = next((x for x in get_books() if x['id']==rec['book_id']), None)
-            if not b:
-                continue
+            if not b: continue
             st.markdown(f"### {b['title']} by {b['author']}")
             st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
             fine_now = calculate_fine_for_record(rec)
-            if fine_now > 0:
-                st.warning(f"⚠ Fine so far: ₹{fine_now}")
-    
-            # ✅ FIXED unique key
-            if st.button("Return", key=f"return_{rec['book_id']}_{current_user['email']}_{rec['issue_date']}"):
-                ok, msg, fine = return_book_from_user(current_user['email'], rec['book_id'])
+            if fine_now>0: st.warning(f"⚠ Fine so far: ₹{fine_now}")
+            if st.button("Return", key=f"return_{rec['book_id']}_{current_user['email']}"):
+                ok,msg,fine = return_book_from_user(current_user['email'], rec['book_id'])
                 if ok:
                     st.success(f"{msg}. Fine: ₹{fine}")
                     st.rerun()
@@ -585,3 +580,6 @@ def app():
 # -------------------------
 if __name__=="__main__":
     app()
+Make this as working project, so tell me where to change and what to. write the code without any error
+
+Rectify the error and rectify and clear that
