@@ -528,28 +528,28 @@ def app():
             st.divider()
 
     elif page=="Issued Books":
-    st.header("📥 Issued Books")
-    active = user_active_issues(current_user['email'])
-    if not active:
-        st.info("No active issues.")
-    for rec in active:
-        b = next((x for x in get_books() if x['id']==rec['book_id']), None)
-        if not b:
-            continue
-        st.markdown(f"### {b['title']} by {b['author']}")
-        st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
-        fine_now = calculate_fine_for_record(rec)
-        if fine_now > 0:
-            st.warning(f"⚠ Fine so far: ₹{fine_now}")
+        st.header("📥 Issued Books")
+        active = user_active_issues(current_user['email'])
+        if not active:
+            st.info("No active issues.")
+        for rec in active:
+            b = next((x for x in get_books() if x['id']==rec['book_id']), None)
+            if not b:
+                continue
+            st.markdown(f"### {b['title']} by {b['author']}")
+            st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
+            fine_now = calculate_fine_for_record(rec)
+            if fine_now > 0:
+                st.warning(f"⚠ Fine so far: ₹{fine_now}")
 
-        # ✅ FIXED unique key
-        if st.button("Return", key=f"return_{rec['book_id']}_{current_user['email']}_{rec['issue_date']}"):
-            ok, msg, fine = return_book_from_user(current_user['email'], rec['book_id'])
-            if ok:
-                st.success(f"{msg}. Fine: ₹{fine}")
-                st.rerun()
-            else:
-                st.error(msg)
+            # ✅ FIXED unique key for return button
+            if st.button("Return", key=f"return_{rec['book_id']}_{current_user['email']}_{rec['issue_date']}"):
+                ok, msg, fine = return_book_from_user(current_user['email'], rec['book_id'])
+                if ok:
+                    st.success(f"{msg}. Fine: ₹{fine}")
+                    st.rerun()
+                else:
+                    st.error(msg)
 
 
     elif page=="Recommendations":
