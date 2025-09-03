@@ -457,9 +457,13 @@ def app():
         st.session_state['user'] = None
     if 'view_book' not in st.session_state:
         st.session_state['view_book'] = None
+    if "logged_in" not in st.session_state:
+        st.session_state["logged_in"] = False
+
 
     # --------- Login/Signup ---------
-    if st.session_state['user'] is None:
+    if not st.session_state["logged_in"]:
+    # show login/signup UI
         # Background + Centering
         left, center, right = st.columns([2,1.5,2])
         with center:
@@ -505,11 +509,12 @@ def app():
                     user = login_user(email, password)
                     if user:
                         st.session_state['user'] = user
+                        st.session_state['logged_in'] = True   # ✅ mark as logged in
                         st.success(f"Welcome {user['name']}")
-                        time.sleep(1)
-                        st.rerun()
+                        st.rerun()   # rerun immediately to load dashboard
                     else:
                         st.error("Invalid credentials")
+
                 st.markdown("</div>", unsafe_allow_html=True)
     
         st.stop()
