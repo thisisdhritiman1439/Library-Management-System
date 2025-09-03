@@ -1,4 +1,3 @@
-Can i change the User Authentication as I have to give the password of 8 Characters, Block Letter, Small letter, special characters, numbers, like alphanumeric characters mixed, so that the password will be strong, if not do not allow to login the user, and ask to rewrite the strong password. as well as can i change the front UI of this system like Welcome to Library Management System and added a library picture behind that for more attractive. The code of this project is: 
 import streamlit as st
 import json
 import os
