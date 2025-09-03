@@ -519,10 +519,14 @@ def app():
     
         st.stop()
 
-    current_user = st.session_state['user']
+    current_user = st.session_state.get("user", None)
+    
+    if current_user is not None:
+        st.sidebar.markdown(f"### 👤 {current_user['name']}")
+        st.sidebar.write(f"Role: {current_user['role']}")
+    else:
+        st.sidebar.warning("⚠️ No user logged in")
 
-    st.sidebar.markdown(f"### 👤 {current_user['name']}")
-    st.sidebar.markdown(f"**Role:** {current_user['role'].capitalize()}")
     st.sidebar.markdown("---")
 
     # Notifications
