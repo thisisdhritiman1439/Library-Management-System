@@ -178,10 +178,14 @@ def issue_book_to_user(user_email: str, book_id: int, loan_days: int = DEFAULT_L
         return False, "Book not found."
     if not book.get('available', True):
         return False, "Book currently not available."
+
+    # set availability + who holds it (optional)
     for b in books:
         if b['id'] == book_id:
             b['available'] = False
+            b['issued_to'] = user_email.lower()
     save_books(books)
+
     today = date.today()
     due = today + timedelta(days=loan_days)
     issued.append({
@@ -194,6 +198,7 @@ def issue_book_to_user(user_email: str, book_id: int, loan_days: int = DEFAULT_L
     })
     save_issued(issued)
     return True, f"Issued '{book['title']}'. Due on {due.isoformat()}."
+
 
 def return_book_from_user(user_email: str, book_id: int) -> (bool,str,int):
     books = get_books()
@@ -210,6 +215,7 @@ def return_book_from_user(user_email: str, book_id: int) -> (bool,str,int):
     for b in books:
         if b['id'] == book_id:
             b['available'] = True
+            b.pop('issued_to', None)
     save_books(books)
     return True, "Book returned.", max(0, fine)
 
@@ -286,79 +292,100 @@ def chatbot_response_for_user(user_email: str, message: str) -> str:
 # -------------------------
 def book_card_ui(book: Dict[str,Any], current_user_email: str):
     cols = st.columns([1,3])
+
+    # LEFT: cover
     with cols[0]:
         if book.get('cover_url'):
             try:
                 st.image(book['cover_url'], width=110)
             except:
                 st.write("[No Image]")
+
+    # RIGHT: details + actions
     with cols[1]:
         st.markdown(f"### {book['title']}")
         genres = book.get('genre', [])
         if isinstance(genres, str):
-            genres = [genres]  # wrap string in list
+            genres = [genres]
         st.markdown(f"**Genre:** {', '.join(genres)}")
-        st.write(book.get('description','')[:400] + ("…" if len(book.get('description',''))>400 else ""))
-        st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
-        c1,c2,c3 = st.columns([1,1,1])
-    with c1:
-        issue_key = f"issue_{book['id']}"
-        confirm_flag = f"confirm_{book['id']}"
-    
-        # Show "Already issued" if user already has it
-        if not book.get("available", True) and book.get("issued_to") == current_user_email:
-            st.success("✅ Already issued by you")
-        
-        # Show Issue button only if book is available
-        elif book.get("available", True):
-            if st.button("📥 Issue", key=issue_key):
-                st.session_state[confirm_flag] = True
-    
-            # If Issue clicked → show confirmation
-            if st.session_state.get(confirm_flag, False):
-                st.write(f"Are you sure you want to issue '{book['title']}'?")
-                choice = st.radio(
-                    "Choose an option:",
-                    ["No", "Yes"],
-                    key=f"radio_{book['id']}"
-                )
-    
-                if st.button("Confirm", key=f"confirm_btn_{book['id']}"):
-                    if choice == "Yes":
-                        ok, msg = issue_book_to_user(current_user_email, book['id'])
-                        if ok:
-                            st.success(msg)
-                            st.session_state[confirm_flag] = False
-                            st.rerun()  # refresh so other sections update
-                        else:
-                            st.error(msg)
-                    else:
-                        st.info("❌ Issue cancelled.")
-                        st.session_state[confirm_flag] = False
-        else:
-            st.info("❌ Already issued by another user")
+        desc = book.get('description', '')
+        st.write(desc[:400] + ("…" if len(desc) > 400 else ""))
+        st.write(f"**Available:** {'✅ Yes' if book.get('available', True) else '❌ No'}")
 
+        c1, c2, c3 = st.columns([1, 1, 1])
+
+        # figure out if THIS user already has an active issue for this book
+        active_for_user = any(
+            r for r in get_issued()
+            if r['book_id'] == book['id']
+            and r['user_email'].lower() == current_user_email.lower()
+            and not r.get('returned', False)
+        )
+
+        # ---------- Issue flow ----------
+        with c1:
+            issue_key       = f"issue_{book['id']}_{current_user_email}"
+            confirm_flag    = f"confirm_{book['id']}_{current_user_email}"
+            radio_key       = f"radio_{book['id']}_{current_user_email}"
+            confirm_btn_key = f"confirm_btn_{book['id']}_{current_user_email}"
+
+            if active_for_user:
+                st.success("✅ Already issued by you")
+
+            elif book.get("available", True):
+                # Step 1: show Issue button
+                if st.button("📥 Issue", key=issue_key):
+                    st.session_state[confirm_flag] = True
+
+                # Step 2: show confirmation (Yes/No + Confirm)
+                if st.session_state.get(confirm_flag, False):
+                    st.write(f"Are you sure you want to issue '{book['title']}'?")
+                    choice = st.radio("Choose an option:", ["No", "Yes"], key=radio_key)
+                    if st.button("Confirm", key=confirm_btn_key):
+                        if choice == "Yes":
+                            ok, msg = issue_book_to_user(current_user_email, book['id'])
+                            if ok:
+                                st.success(msg)
+                                # close the confirmation and refresh the whole UI
+                                st.session_state[confirm_flag] = False
+                                st.rerun()
+                            else:
+                                st.error(msg)
+                        else:
+                            st.info("❌ Issue cancelled.")
+                            st.session_state[confirm_flag] = False
+
+            else:
+                # not available, but not by this user
+                st.info("❌ Already issued")
+
+        # ---------- Favorites ----------
         with c2:
-            if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}"):
+            if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}_{current_user_email}"):
                 users = get_users()
                 for u in users:
                     if u['email'].lower() == current_user_email.lower():
-                        if book['id'] not in u.get('favorites', []):
-                            u.setdefault('favorites',[]).append(book['id'])
+                        u.setdefault('favorites', [])
+                        if book['id'] not in u['favorites']:
+                            u['favorites'].append(book['id'])
                             save_users(users)
+                            # keep session user in sync so Favorites page updates immediately
+                            st.session_state['user'] = {k: v for k, v in u.items() if k != 'password_hash'}
                             st.success("Added to favorites.")
                         else:
                             st.info("Already in favorites.")
                 st.rerun()
+
+        # ---------- Overview ----------
         with c3:
             with st.expander("🔎 Overview"):
                 st.image(book.get('cover_url',''), width=150)
                 st.markdown(f"**Title:** {book.get('title','')}")
                 st.markdown(f"**Author:** {book.get('author','')}")
-                genres = book.get('genre', [])
-                if isinstance(genres, str):
-                    genres = [genres]  # wrap string in list
-                st.markdown(f"**Genre:** {', '.join(genres)}")
+                genres2 = book.get('genre', [])
+                if isinstance(genres2, str):
+                    genres2 = [genres2]
+                st.markdown(f"**Genre:** {', '.join(genres2)}")
                 st.markdown("**Description:**")
                 st.write(book.get('description',''))
                 st.markdown("**Index:**")
@@ -510,7 +537,7 @@ def app():
             st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
             fine_now = calculate_fine_for_record(rec)
             if fine_now>0: st.warning(f"⚠ Fine so far: ₹{fine_now}")
-            if st.button("Return", key=f"return_{rec['book_id']}_{current_user_email}"):
+            if st.button("Return", key=f"return_{rec['book_id']}_{current_user['email']}"):
                 ok,msg,fine = return_book_from_user(current_user['email'], rec['book_id'])
                 if ok:
                     st.success(f"{msg}. Fine: ₹{fine}")
