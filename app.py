@@ -290,15 +290,15 @@ def chatbot_response_for_user(user_email: str, message: str) -> str:
 # -------------------------
 # UI helpers
 # -------------------------
-def book_card_ui(book: Dict[str,Any], current_user_email: str):
-    cols = st.columns([1,3])
+def book_card_ui(book: Dict[str, Any], current_user_email: str):
+    cols = st.columns([1, 3])
 
     # LEFT: cover
     with cols[0]:
         if book.get('cover_url'):
             try:
                 st.image(book['cover_url'], width=110)
-            except:
+            except Exception:
                 st.write("[No Image]")
 
     # RIGHT: details + actions
@@ -314,9 +314,10 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
 
         c1, c2, c3 = st.columns([1, 1, 1])
 
-        # figure out if THIS user already has an active issue for this book
+        # --- check if this user already issued this book ---
+        issued_records = get_issued()
         active_for_user = any(
-            r for r in get_issued()
+            r for r in issued_records
             if r['book_id'] == book['id']
             and r['user_email'].lower() == current_user_email.lower()
             and not r.get('returned', False)
@@ -346,7 +347,6 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                             ok, msg = issue_book_to_user(current_user_email, book['id'])
                             if ok:
                                 st.success(msg)
-                                # close the confirmation and refresh the whole UI
                                 st.session_state[confirm_flag] = False
                                 st.rerun()
                             else:
@@ -356,7 +356,6 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                             st.session_state[confirm_flag] = False
 
             else:
-                # not available, but not by this user
                 st.info("❌ Already issued")
 
         # ---------- Favorites ----------
@@ -369,8 +368,9 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                         if book['id'] not in u['favorites']:
                             u['favorites'].append(book['id'])
                             save_users(users)
-                            # keep session user in sync so Favorites page updates immediately
-                            st.session_state['user'] = {k: v for k, v in u.items() if k != 'password_hash'}
+                            st.session_state['user'] = {
+                                k: v for k, v in u.items() if k != 'password_hash'
+                            }
                             st.success("Added to favorites.")
                         else:
                             st.info("Already in favorites.")
@@ -379,7 +379,8 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         # ---------- Overview ----------
         with c3:
             with st.expander("🔎 Overview"):
-                st.image(book.get('cover_url',''), width=150)
+                if book.get('cover_url'):
+                    st.image(book['cover_url'], width=150)
                 st.markdown(f"**Title:** {book.get('title','')}")
                 st.markdown(f"**Author:** {book.get('author','')}")
                 genres2 = book.get('genre', [])
@@ -388,10 +389,10 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                 st.markdown(f"**Genre:** {', '.join(genres2)}")
                 st.markdown("**Description:**")
                 st.write(book.get('description',''))
-                st.markdown("**Index:**")
-                for idx in book.get('index', []):
-                    st.write(f"- {idx}")
-
+                if book.get('index'):
+                    st.markdown("**Index:**")
+                    for idx in book.get('index', []):
+                        st.write(f"- {idx}")
 
 # -------------------------
 # Main app
