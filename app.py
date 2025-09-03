@@ -302,15 +302,19 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
         st.write(f"**Available:** {'✅ Yes' if book.get('available', False) else '❌ No'}")
         c1,c2,c3 = st.columns([1,1,1])
     with c1:
-        if book.get('available', False):
-            issue_key = f"issue_{book['id']}"
-            confirm_flag = f"confirm_{book['id']}"
+        issue_key = f"issue_{book['id']}"
+        confirm_flag = f"confirm_{book['id']}"
     
-            # Step 1: Show Issue button
+        # Show "Already issued" if user already has it
+        if not book.get("available", True) and book.get("issued_to") == current_user_email:
+            st.success("✅ Already issued by you")
+        
+        # Show Issue button only if book is available
+        elif book.get("available", True):
             if st.button("📥 Issue", key=issue_key):
                 st.session_state[confirm_flag] = True
     
-            # Step 2: If Issue clicked, show Yes/No and Confirm button
+            # If Issue clicked → show confirmation
             if st.session_state.get(confirm_flag, False):
                 st.write(f"Are you sure you want to issue '{book['title']}'?")
                 choice = st.radio(
@@ -324,15 +328,13 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                         ok, msg = issue_book_to_user(current_user_email, book['id'])
                         if ok:
                             st.success(msg)
-                            # Update availability so Issue button disappears
                             st.session_state[confirm_flag] = False
-                            st.rerun()
+                            st.rerun()  # refresh so other sections update
                         else:
                             st.error(msg)
                     else:
-                        st.info("Issue cancelled.")
+                        st.info("❌ Issue cancelled.")
                         st.session_state[confirm_flag] = False
-                        st.rerun()
         else:
             st.info("❌ Already issued by another user")
 
