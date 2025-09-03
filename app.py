@@ -424,25 +424,33 @@ def book_card_ui(book: Dict[str, Any], current_user_email: str):
 # -------------------------
 def app():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
+# -------------------------
+# Custom UI Styling
+# -------------------------
     page_bg = """
     <style>
-    [data-testid="stAppViewContainer"] {
-        background-image: url("https://plus.unsplash.com/premium_photo-1677567996070-68fa4181775a?w=2400&auto=format&fit=crop&q=60&ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzU2ODkxNzc4fA&ixlib=rb-4.1.0");
+    /* Full-page background */
+    .stApp {
+        background: url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f") no-repeat center center fixed;
         background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
     }
-    [data-testid="stHeader"] {
-        background: rgba(0,0,0,0);
-    }
-    h1 {
+    
+    /* Transparent card effect for content */
+    .login-card, .signup-card {
+        background: rgba(0,0,0,0.7); /* black with transparency */
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
         color: white;
-        text-shadow: 2px 2px 4px #000000;
+    }
+    
+    /* Make all labels white */
+    label, .stTextInput > label, .stSelectbox > label {
+        color: white !important;
     }
     </style>
     """
     st.markdown(page_bg, unsafe_allow_html=True)
-    
     st.title("📚 Welcome to the Library Management System")
 
     st.title(APP_TITLE)
@@ -460,28 +468,36 @@ def app():
         with right:
             choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
         if choice=="Sign Up":
-            st.header("Create account")
-            name = st.text_input("Full name", key="su_name")
-            mobile = st.text_input("Mobile number", key="su_mobile")
-            email = st.text_input("Email", key="su_email")
-            password = st.text_input("Password", type="password", key="su_pass")
-            role = st.selectbox("Role", ["user","librarian"], key="su_role")
-            if st.button("Create Account"):
-                ok,msg = signup_user(name,mobile,email,password,role)
-                if ok: st.success(msg + " Please login.")
-                else: st.error(msg)
+            with st.container():
+                st.markdown('<div class="signup-card">', unsafe_allow_html=True)
+                st.header("Create account")
+                name = st.text_input("Full name", key="su_name")
+                mobile = st.text_input("Mobile number", key="su_mobile")
+                email = st.text_input("Email", key="su_email")
+                password = st.text_input("Password", type="password", key="su_pass")
+                role = st.selectbox("Role", ["user","librarian"], key="su_role")
+                if st.button("Create Account"):
+                    ok,msg = signup_user(name,mobile,email,password,role)
+                    if ok: st.success(msg + " Please login.")
+                    else: st.error(msg)
+                st.markdown('</div>', unsafe_allow_html=True)
+        
         else:
-            st.header("Login")
-            email = st.text_input("Email", key="li_email")
-            password = st.text_input("Password", type="password", key="li_pass")
-            if st.button("Login"):
-                user = login_user(email,password)
-                if user:
-                    st.session_state['user'] = user
-                    st.success(f"Welcome {user['name']}")
-                    st.rerun()
-                else:
-                    st.error("Invalid credentials")
+            with st.container():
+                st.markdown('<div class="login-card">', unsafe_allow_html=True)
+                st.header("Login")
+                email = st.text_input("Email", key="li_email")
+                password = st.text_input("Password", type="password", key="li_pass")
+                if st.button("Login"):
+                    user = login_user(email,password)
+                    if user:
+                        st.session_state['user'] = user
+                        st.success(f"Welcome {user['name']}")
+                        st.rerun()
+                    else:
+                        st.error("Invalid credentials")
+                st.markdown('</div>', unsafe_allow_html=True)
+
         st.stop()
 
     current_user = st.session_state['user']
