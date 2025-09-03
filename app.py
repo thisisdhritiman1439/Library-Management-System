@@ -461,14 +461,12 @@ def app():
 
     # --------- Login/Signup ---------
     if st.session_state['user'] is None:
-        left,right = st.columns([2,1])
-        with left:
-            st.markdown("Welcome — login or sign up. Demo: `user@example.com / user123`")
-        with right:
+        # Background + centering
+        left, center, right = st.columns([2,1.5,2])
+        with center:
             choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
-        if choice=="Sign Up":
-            with st.container():
-                st.markdown('<div class="signup-card">', unsafe_allow_html=True)
+    
+            if choice == "Sign Up":
                 st.header("Create account")
                 name = st.text_input("Full name", key="su_name")
                 mobile = st.text_input("Mobile number", key="su_mobile")
@@ -477,27 +475,27 @@ def app():
                 role = st.selectbox("Role", ["user","librarian"], key="su_role")
                 if st.button("Create Account"):
                     ok,msg = signup_user(name,mobile,email,password,role)
-                    if ok: st.success(msg + " Please login.")
-                    else: st.error(msg)
-                st.markdown('</div>', unsafe_allow_html=True)
-        
-        else:
-            with st.container():
-                st.markdown('<div class="login-card">', unsafe_allow_html=True)
+                    if ok:
+                        st.success(msg + " Please login.")
+                    else:
+                        st.error(msg)
+    
+            else:  # LOGIN
                 st.header("Login")
                 email = st.text_input("Email", key="li_email")
                 password = st.text_input("Password", type="password", key="li_pass")
-                if st.button("Login"):
+                if st.button("Login", key="login_btn"):
                     user = login_user(email,password)
                     if user:
                         st.session_state['user'] = user
                         st.success(f"Welcome {user['name']}")
-                        st.rerun()
+                        time.sleep(1)   # short delay so user sees the message
+                        st.rerun()      # reload and go to dashboard
                     else:
                         st.error("Invalid credentials")
-                st.markdown('</div>', unsafe_allow_html=True)
+    
+        st.stop()   # ✅ ensures rest of app doesn't load until logged in
 
-        st.stop()
 
     current_user = st.session_state['user']
 
