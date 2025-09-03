@@ -320,7 +320,6 @@ def book_card_ui(book: Dict[str,Any], current_user_email: str):
                     else:
                         st.info("Issue cancelled.")
                     st.rerun()
-
         with c2:
             if st.button("⭐ Add to Favorites", key=f"fav_{book['id']}"):
                 users = get_users()
