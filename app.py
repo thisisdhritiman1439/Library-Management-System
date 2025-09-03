@@ -654,9 +654,14 @@ def app():
                 elif new != confirm:
                     st.error("New passwords do not match.")
                 else:
-                    u['password_hash'] = hash_password(new)
-                    save_users(users)
-                    st.success("Password changed successfully.")
+                    ok, msg = is_strong_password(new)
+                    if not ok:
+                        st.error(msg)
+                    else:
+                        u['password_hash'] = hash_password(new)
+                        save_users(users)
+                        st.success("Password changed successfully.")
+
 
 # -------------------------
 # Entry point
