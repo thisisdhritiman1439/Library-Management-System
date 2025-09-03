@@ -446,9 +446,10 @@ def app():
     # --------- Login/Signup ---------
     if st.session_state['user'] is None:
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    
+
     st.markdown("## 🔐 Welcome To Library Management System")
     choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
+
     
     if choice=="Sign Up":
         st.header("Create account")
