@@ -510,7 +510,7 @@ def app():
             st.write(f"**Issued on:** {rec['issue_date']}  |  **Due:** {rec['due_date']}")
             fine_now = calculate_fine_for_record(rec)
             if fine_now>0: st.warning(f"⚠ Fine so far: ₹{fine_now}")
-            if st.button("Return", key=f"return_{rec['book_id']}"):
+            if st.button("Return", key=f"return_{rec['book_id']}_{current_user_email}"):
                 ok,msg,fine = return_book_from_user(current_user['email'], rec['book_id'])
                 if ok:
                     st.success(f"{msg}. Fine: ₹{fine}")
