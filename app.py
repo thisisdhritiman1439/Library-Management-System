@@ -1,10 +1,10 @@
+Can i change the User Authentication as I have to give the password of 8 Characters, Block Letter, Small letter, special characters, numbers, like alphanumeric characters mixed, so that the password will be strong, if not do not allow to login the user, and ask to rewrite the strong password. as well as can i change the front UI of this system like Welcome to Library Management System and added a library picture behind that for more attractive. The code of this project is: 
 import streamlit as st
 import json
 import os
 import shutil
 import time
 import hashlib
-import re  
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Any
 
@@ -17,25 +17,11 @@ ISSUED_FILE = "issued_books.json"
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
-APP_TITLE = "📚 Welcome To Smart Library Management System"
+APP_TITLE = "📚 Library Management System"
 
 # -------------------------
 # Safe JSON helpers
 # -------------------------
-
-def is_strong_password(password: str) -> (bool, str):
-    if len(password) < 8:
-        return False, "Password must be at least 8 characters long."
-    if not re.search(r"[A-Z]", password):
-        return False, "Password must include at least one uppercase letter."
-    if not re.search(r"[a-z]", password):
-        return False, "Password must include at least one lowercase letter."
-    if not re.search(r"[0-9]", password):
-        return False, "Password must include at least one number."
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        return False, "Password must include at least one special character."
-    return True, ""
-
 def backup_corrupt_file(path: str):
     try:
         ts = int(time.time())
@@ -157,31 +143,21 @@ def save_issued(data: List[Dict[str,Any]]):
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
-def signup_user(name: str, mobile: str, email: str, password: str, role: str) -> (bool, str):
+def signup_user(name: str, mobile: str, email: str, password: str, role: str) -> (bool,str):
     users = get_users()
     email_l = email.strip().lower()
-
-    # ✅ Strong password validation
-    ok, msg = is_strong_password(password)
-    if not ok:
-        return False, msg
-
     if any(u['email'].lower() == email_l for u in users):
         return False, "Email already registered."
-
-    user = {
-        "name": name,
-        "mobile": mobile,
+    users.append({
+        "name": name.strip(),
+        "mobile": mobile.strip(),
         "email": email_l,
         "password_hash": hash_password(password),
         "role": role,
-        "favorites": [],
-        "issued": []
-    }
-    users.append(user)
+        "favorites": []
+    })
     save_users(users)
-    return True, "Account created successfully."
-
+    return True, "Account created."
 
 def login_user(email: str, password: str):
     users = get_users()
@@ -423,109 +399,50 @@ def book_card_ui(book: Dict[str, Any], current_user_email: str):
 # Main app
 # -------------------------
 def app():
-# -------------------------
-# Custom UI Styling
-# -------------------------
     st.set_page_config(page_title=APP_TITLE, layout="wide")
-    page_bg = """
-    <style>
-    /* Full-page background */
-    .stApp {
-        background: url("https://images.unsplash.com/photo-1606733803396-1d028f0e6f43?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center fixed;
-        background-size: cover;
-    }
-    
-    /* Transparent card effect for content */
-    .login-card, .signup-card {
-        background: rgba(0,0,0,0.7); /* black with transparency */
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
-        color: white;
-    }
-    
-    /* Make all labels white */
-    label, .stTextInput > label, .stSelectbox > label {
-        color: white !important;
-    }
-    </style>
-    """
-    st.markdown(page_bg, unsafe_allow_html=True)
-
+    st.title(APP_TITLE)
     bootstrap_files()
-    if "user" not in st.session_state:
-        st.session_state["user"] = None
-    if "view_book" not in st.session_state:
-        st.session_state["view_book"] = None
-    if "logged_in" not in st.session_state:
-        st.session_state["logged_in"] = False
+    if 'User' not in st.session_state:
+        st.session_state['user'] = None
+    if 'view_book' not in st.session_state:
+        st.session_state['view_book'] = None
 
     # --------- Login/Signup ---------
-    if not st.session_state["logged_in"]:
-    # show login/signup UI
-        # Background + Centering
-        left, center, right = st.columns([2,1.5,2])
-        with center:
-            # Welcome message
-            st.markdown(
-                "<h2 style='text-align: center; color: white; "
-                "background-color: black; padding: 12px; "
-                "border-radius: 10px;'>📚 Welcome to Library Management System</h2>",
-                unsafe_allow_html=True
-            )
-    
-            # Auth choice (Login / Sign Up)
+    if st.session_state['user'] is None:
+        left,right = st.columns([2,1])
+        with left:
+            st.markdown("Welcome — login or sign up. Demo: `user@example.com / user123`")
+        with right:
             choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
-    
-            if choice == "Sign Up":
-                st.markdown(
-                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
-                    unsafe_allow_html=True
-                )
-                st.subheader("📝 Create Account", divider="rainbow")
-                name = st.text_input("Full name", key="su_name")
-                mobile = st.text_input("Mobile number", key="su_mobile")
-                email = st.text_input("Email", key="su_email")
-                password = st.text_input("Password", type="password", key="su_pass")
-                role = st.selectbox("Role", ["user","librarian"], key="su_role")
-                if st.button("Create Account"):
-                    ok, msg = signup_user(name, mobile, email, password, role)
-                    if ok:
-                        st.success(msg + " Please login.")
-                    else:
-                        st.error(msg)
-                st.markdown("</div>", unsafe_allow_html=True)
-    
-            else:  # LOGIN
-                st.markdown(
-                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
-                    unsafe_allow_html=True
-                )
-                st.subheader("🔑 Login", divider="rainbow")
-                email = st.text_input("Email", key="li_email")
-                password = st.text_input("Password", type="password", key="li_pass")
-                if st.button("Login", key="login_btn"):
-                    user = login_user(email, password)
-                    if user:
-                        st.session_state['user'] = user
-                        st.session_state['logged_in'] = True   # ✅ mark as logged in
-                        st.success(f"Welcome {user['name']}")
-                        st.rerun()   # rerun immediately to load dashboard
-                    else:
-                        st.error("Invalid credentials")
-                        st.stop()
-                st.markdown("</div>", unsafe_allow_html=True)
-    
-    current_user = st.session_state.get("user", None)
-    
-    if current_user is None:
-        st.error("⚠️ Please log in again.")
-        st.session_state["logged_in"] = False
-        st.rerun()
+        if choice=="Sign Up":
+            st.header("Create account")
+            name = st.text_input("Full name", key="su_name")
+            mobile = st.text_input("Mobile number", key="su_mobile")
+            email = st.text_input("Email", key="su_email")
+            password = st.text_input("Password", type="password", key="su_pass")
+            role = st.selectbox("Role", ["user","librarian"], key="su_role")
+            if st.button("Create Account"):
+                ok,msg = signup_user(name,mobile,email,password,role)
+                if ok: st.success(msg + " Please login.")
+                else: st.error(msg)
+        else:
+            st.header("Login")
+            email = st.text_input("Email", key="li_email")
+            password = st.text_input("Password", type="password", key="li_pass")
+            if st.button("Login"):
+                user = login_user(email,password)
+                if user:
+                    st.session_state['user'] = user
+                    st.success(f"Welcome {user['name']}")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials")
+        st.stop()
 
-    else:
-        st.sidebar.warning("⚠️ No user logged in")
+    current_user = st.session_state['user']
 
+    st.sidebar.markdown(f"### 👤 {current_user['name']}")
+    st.sidebar.markdown(f"**Role:** {current_user['role'].capitalize()}")
     st.sidebar.markdown("---")
 
     # Notifications
@@ -660,14 +577,9 @@ def app():
                 elif new != confirm:
                     st.error("New passwords do not match.")
                 else:
-                    ok, msg = is_strong_password(new)
-                    if not ok:
-                        st.error(msg)
-                    else:
-                        u['password_hash'] = hash_password(new)
-                        save_users(users)
-                        st.success("Password changed successfully.")
-            
+                    u['password_hash'] = hash_password(new)
+                    save_users(users)
+                    st.success("Password changed successfully.")
 
 # -------------------------
 # Entry point
