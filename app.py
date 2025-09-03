@@ -17,7 +17,7 @@ ISSUED_FILE = "issued_books.json"
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
-APP_TITLE = "📚 Library Management System"
+APP_TITLE = "📚 Welcome To Library Management System"
 
 # -------------------------
 # Safe JSON helpers
@@ -417,6 +417,25 @@ def book_card_ui(book: Dict[str, Any], current_user_email: str):
 # -------------------------
 def app():
     st.set_page_config(page_title=APP_TITLE, layout="wide")
+    st.markdown("""
+    <style>
+    .login-box {
+        max-width: 400px;       /* smaller width */
+        margin: auto;           /* center horizontally */
+        margin-top: 80px;       /* push down vertically */
+        background-color: black;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+        color: white;
+        text-align: center;
+    }
+    .login-box h2, .login-box label {
+        color: white !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
     st.title(APP_TITLE)
     bootstrap_files()
     if 'user' not in st.session_state:
@@ -426,35 +445,38 @@ def app():
 
     # --------- Login/Signup ---------
     if st.session_state['user'] is None:
-        left,right = st.columns([2,1])
-        with left:
-            st.markdown("Welcome — login or sign up. Demo: `user@example.com / user123`")
-        with right:
-            choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
-        if choice=="Sign Up":
-            st.header("Create account")
-            name = st.text_input("Full name", key="su_name")
-            mobile = st.text_input("Mobile number", key="su_mobile")
-            email = st.text_input("Email", key="su_email")
-            password = st.text_input("Password", type="password", key="su_pass")
-            role = st.selectbox("Role", ["user","librarian"], key="su_role")
-            if st.button("Create Account"):
-                ok,msg = signup_user(name,mobile,email,password,role)
-                if ok: st.success(msg + " Please login.")
-                else: st.error(msg)
-        else:
-            st.header("Login")
-            email = st.text_input("Email", key="li_email")
-            password = st.text_input("Password", type="password", key="li_pass")
-            if st.button("Login"):
-                user = login_user(email,password)
-                if user:
-                    st.session_state['user'] = user
-                    st.success(f"Welcome {user['name']}")
-                    st.rerun()
-                else:
-                    st.error("Invalid credentials")
-        st.stop()
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
+    
+    st.markdown("## 🔐 Welcome To Library Management System")
+    choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
+    
+    if choice=="Sign Up":
+        st.header("Create account")
+        name = st.text_input("Full name", key="su_name")
+        mobile = st.text_input("Mobile number", key="su_mobile")
+        email = st.text_input("Email", key="su_email")
+        password = st.text_input("Password", type="password", key="su_pass")
+        role = st.selectbox("Role", ["user","librarian"], key="su_role")
+        if st.button("Create Account"):
+            ok,msg = signup_user(name,mobile,email,password,role)
+            if ok: st.success(msg + " Please login.")
+            else: st.error(msg)
+    else:
+        st.header("Login")
+        email = st.text_input("Email", key="li_email")
+        password = st.text_input("Password", type="password", key="li_pass")
+        if st.button("Login"):
+            user = login_user(email,password)
+            if user:
+                st.session_state['user'] = user
+                st.success(f"Welcome {user['name']}")
+                st.rerun()
+            else:
+                st.error("Invalid credentials")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.stop()
+
 
     current_user = st.session_state['user']
 
