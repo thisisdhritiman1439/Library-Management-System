@@ -1,50 +1,76 @@
+Perfect 👍 Thanks for sharing the **previous README**. I’ll **merge your old one with the new one** I drafted, keeping the professional structure but adding the **new features, chatbot, analytics, notifications, future improvements, and updated authorship**.
+
+Here’s your **final combined `README.md`**:
+
+```markdown
 # 📚 Library Management System using Python and Streamlit
 
-A full-featured, role-based **Library Management System** built using **Python** and **Streamlit**, designed to digitize and automate library operations such as book issuing, returns, viewing, recommendations, and more. The system supports both **Students** and **Librarians**, offering secure login, detailed book previews, personalized recommendations, and data stored in **JSON** format.
+A **full-featured, role-based Library Management System** built using **Python** and **Streamlit**, designed to digitize and automate library operations such as book issuing, returns, viewing, recommendations, and more.  
+The system supports both **Students** and **Librarians**, offering secure login, detailed book previews, personalized recommendations, real-time notifications, chatbot assistance, and data stored in **JSON** format.
 
 ---
 
 ## 🚀 Features
 
 ### 🔐 User Authentication
-- Signup/Login with **Name**, **Mobile Number**, **Email**, **Password**, and **Role** (Student/Librarian/Others).
-- Role-based access (Librarian-exclusive features).
+- Signup/Login with **Name**, **Mobile Number**, **Email**, **Password**, and **Role** (Student/Librarian/Others).  
+- Secure password validation and role-based access.  
+- Librarian-exclusive features for managing the system.  
 
 ### 📖 Book Management
 - **View All Books** with:
   - Book ID, Title, Author
   - Cover image, Description
   - Availability Status
-
+- **Book Overview with Index Page**  
+- JSON-based book storage for portability and flexibility.  
 - **Add New Book** *(Librarian only)*  
 - **Delete Book** *(Librarian only)*  
-- **Book Overview with Index Page**  
-- JSON-based book storage for portability and flexibility.
 
 ### 📋 Student Utilities
-- **Add to Book List** (Wishlist/Favorites before issuing)
+- **Add to Book List** (Wishlist/Favorites before issuing)  
 - **Issue Book** with:
-  - Due date tracking
-  - Countdown on days remaining
-- **Return Book** to mark availability
-- **View Issued Books**
+  - Due date tracking  
+  - Countdown on days remaining  
+- **Return Book** to mark availability  
+- **View Issued Books** and manage reading activity  
 
 ### 🤖 Book Recommendation System
-- Suggests books based on past borrowing history and category.
-- Enhances discovery of related books.
+- Suggests books based on:
+  - Favorites  
+  - Past borrowing history  
+  - Book categories & keywords  
+- Enhances discovery of related books  
+
+### 🔔 Notifications & Fines
+- Due date reminders  
+- Fine calculation for overdue books  
+- Notifications displayed inside the app  
+
+### 📊 Librarian Dashboard
+- Track issued books with due dates & fines  
+- Monitor user activity  
+- View analytics of most issued & most favorited books  
+
+### 💬 Chatbot Assistant
+- Integrated **AI-based chatbot**  
+- Helps students find books and get recommendations instantly  
+- Provides guidance on library usage  
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Technology | Usage |
-|------------|-------|
-| `Python`   | Backend & Logic |
-| `Streamlit` | Frontend UI |
-| `JSON` | Data storage for books and users |
-| `Pandas` | Data processing and management |
-| `Streamlit Cloud` | Deployment platform |
-| `GitHub` | Version Control & Hosting |
+| Technology      | Usage                                |
+|-----------------|--------------------------------------|
+| `Python`        | Backend & Logic                      |
+| `Streamlit`     | Frontend UI                          |
+| `JSON`          | Data storage for books and users     |
+| `Pandas`        | Data processing and management       |
+| `Streamlit Cloud` | Deployment platform                |
+| `GitHub`        | Version Control & Hosting            |
+| `hashlib`       | Password hashing & authentication    |
+| `datetime`      | Due dates, fines, reminders          |
 
 ---
 
@@ -52,7 +78,7 @@ A full-featured, role-based **Library Management System** built using **Python**
 
 ```
 
-📁 library-management-system/
+📁 Library-Management-System/
 │
 ├── 📄 app.py                  # Main Streamlit application
 ├── 📁 assets/                 # Book cover images
@@ -60,7 +86,7 @@ A full-featured, role-based **Library Management System** built using **Python**
 ├── 📄 users.json              # User data (students/librarians)
 ├── 📄 issued\_books.json       # Issued book records
 ├── 📄 requirements.txt        # Python dependencies
-└── 📄 README.md               # This file
+└── 📄 README.md               # Project documentation
 
 ````
 
@@ -69,7 +95,7 @@ A full-featured, role-based **Library Management System** built using **Python**
 ## 🖥️ Live Demo
 
 🌐 **Try the app now**:  
-[🔗 Live Streamlit App](https://library-management-system-ef4yqfughzl8otmr6uwkzy.streamlit.app/)
+[🔗 Live Streamlit App](https://library-management-system-9wooqes876lppnvdb7nzpq.streamlit.app/#welcome-to-library-management-system)  
 
 ---
 
@@ -95,6 +121,22 @@ streamlit run app.py
 
 ---
 
+## 📂 Demo Credentials
+
+Use these demo accounts for testing:
+
+* **Librarian**
+
+  * Email: `librarian@example.com`
+  * Password: `admin123`
+
+* **User**
+
+  * Email: `user@example.com`
+  * Password: `user123`
+
+---
+
 ## 📷 Screenshots
 
 > Add screenshots in the `assets/` folder and embed them here:
@@ -104,17 +146,21 @@ streamlit run app.py
 * 📘 Book Description + Index
 * ➕ Add/Delete Book
 * 📥 Issue/Return Book
+* ⭐ Favorites
 * 🤖 Recommendation Panel
+* 💬 Chatbot Assistant
+* 📊 Analytics Dashboard
 
 ---
 
 ## 📈 Future Enhancements
 
-* 📧 Email notifications for book due reminders.
-* 🔍 Search & filter system for faster book lookup.
-* 🧾 Export issued book reports to CSV.
-* 🛡️ OTP-based authentication.
-* 📊 Admin Analytics Dashboard.
+* 📧 Email/OTP-based authentication
+* 🔍 Advanced search & filter system
+* 🧾 Export issued book reports to CSV/Excel
+* 📊 More detailed analytics dashboard for librarians
+* ☁️ Database integration (SQLite/PostgreSQL)
+* 📱 Mobile-friendly responsive design
 
 ---
 
@@ -140,4 +186,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 * Built with ❤️ using Python and Streamlit
 * Inspired by the real-world challenges of manual library systems
-]
+* Enhanced with modern features like recommendations, chatbot, and analytics
