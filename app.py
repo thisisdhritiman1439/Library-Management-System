@@ -426,7 +426,7 @@ def app():
 # -------------------------
 # Custom UI Styling
 # -------------------------
-    # st.set_page_config(page_title=APP_TITLE, layout="wide")
+    st.set_page_config(page_title=APP_TITLE, layout="wide")
     page_bg = """
     <style>
     /* Full-page background */
@@ -461,79 +461,59 @@ def app():
 
     # --------- Login/Signup ---------
     if st.session_state['user'] is None:
-        # Page title in the center (full width, white text)
-        st.markdown(
-            "<h1 style='text-align: center; color: white; "
-            "margin-bottom: 30px;'>📚 Welcome to Library Management System</h1>",
-            unsafe_allow_html=True
-        )
+        # Background + Centering
+        left, center, right = st.columns([2,1.5,2])
+        with center:
+            # Welcome message
+            st.markdown(
+                "<h2 style='text-align: center; color: white; "
+                "background-color: black; padding: 12px; "
+                "border-radius: 10px;'>📚 Welcome to Library Management System</h2>",
+                unsafe_allow_html=True
+            )
     
-        # Auth choice (Login / Sign Up)
-        choice = st.selectbox("Choose Action", ["Login","Sign Up"], key="auth_choice", index=0)
+            # Auth choice (Login / Sign Up)
+            choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
     
-        # CSS for black box form
-        st.markdown(
-            """
-            <style>
-            .login-box {
-                background-color: black;
-                color: white !important;
-                padding: 25px;
-                border-radius: 12px;
-                max-width: 400px;
-                margin: auto;
-                box-shadow: 0px 0px 20px rgba(0,0,0,0.7);
-            }
-            .login-box label {
-                color: white !important;
-                font-weight: bold;
-            }
-            .login-box input, .login-box select {
-                background-color: #222 !important;
-                color: white !important;
-                border: 1px solid #555 !important;
-                border-radius: 6px;
-                padding: 6px;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
+            if choice == "Sign Up":
+                st.markdown(
+                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
+                    unsafe_allow_html=True
+                )
+                st.subheader("📝 Create Account", divider="rainbow")
+                name = st.text_input("Full name", key="su_name")
+                mobile = st.text_input("Mobile number", key="su_mobile")
+                email = st.text_input("Email", key="su_email")
+                password = st.text_input("Password", type="password", key="su_pass")
+                role = st.selectbox("Role", ["user","librarian"], key="su_role")
+                if st.button("Create Account"):
+                    ok, msg = signup_user(name, mobile, email, password, role)
+                    if ok:
+                        st.success(msg + " Please login.")
+                    else:
+                        st.error(msg)
+                st.markdown("</div>", unsafe_allow_html=True)
     
-        # Put the login/signup inside a centered black box
-        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+            else:  # LOGIN
+                st.markdown(
+                    "<div style='background-color: black; color: white; padding: 20px; border-radius: 10px;'>",
+                    unsafe_allow_html=True
+                )
+                st.subheader("🔑 Login", divider="rainbow")
+                email = st.text_input("Email", key="li_email")
+                password = st.text_input("Password", type="password", key="li_pass")
+                if st.button("Login", key="login_btn"):
+                    user = login_user(email, password)
+                    if user:
+                        st.session_state['user'] = user
+                        st.success(f"Welcome {user['name']}")
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error("Invalid credentials")
+                st.markdown("</div>", unsafe_allow_html=True)
     
-        if choice == "Sign Up":
-            st.subheader("📝 Create Account")
-            name = st.text_input("Full Name", key="su_name")
-            mobile = st.text_input("Mobile Number", key="su_mobile")
-            email = st.text_input("Email", key="su_email")
-            password = st.text_input("Password", type="password", key="su_pass")
-            role = st.selectbox("Role", ["user","librarian"], key="su_role")
-            if st.button("Create Account"):
-                ok, msg = signup_user(name, mobile, email, password, role)
-                if ok:
-                    st.success(msg + " Please login.")
-                else:
-                    st.error(msg)
-    
-        else:  # LOGIN
-            st.subheader("🔑 Login")
-            email = st.text_input("Email", key="li_email")
-            password = st.text_input("Password", type="password", key="li_pass")
-            if st.button("Login", key="login_btn"):
-                user = login_user(email, password)
-                if user:
-                    st.session_state['user'] = user
-                    st.success(f"Welcome {user['name']}")
-                    time.sleep(1)
-                    st.rerun()
-                else:
-                    st.error("Invalid credentials")
-    
-        st.markdown('</div>', unsafe_allow_html=True)
         st.stop()
-
 
     current_user = st.session_state['user']
 
