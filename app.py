@@ -559,7 +559,8 @@ def app():
             book_card_ui(b, current_user['email'])
             st.divider()
 
-        elif page=="Add Book" and current_user['role']=="librarian":
+    # ---------- Librarian Pages ----------
+    elif page=="Add Book" and current_user['role']=="librarian":
         st.header("➕ Add a New Book")
         title = st.text_input("Title")
         author = st.text_input("Author")
@@ -616,7 +617,6 @@ def app():
                     fine_now = calculate_fine_for_record(rec)
                     if fine_now > 0:
                         st.warning(f"⚠ Overdue — Fine so far: ₹{fine_now}")
-
 
     elif page=="Account":
         st.header("👤 Account Details")
