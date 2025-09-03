@@ -516,8 +516,6 @@ def app():
                         st.stop()
                 st.markdown("</div>", unsafe_allow_html=True)
     
-             st.stop()
-
     current_user = st.session_state.get("user", None)
     
     if current_user is None:
