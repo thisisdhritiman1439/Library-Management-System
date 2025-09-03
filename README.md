@@ -94,9 +94,9 @@ The system supports both **Students** and **Librarians**, offering secure login,
 ## 📌 How to Run Locally
 
 1. Clone this repo:
-```bash
 git clone https://github.com/thisisdhritiman1439/Library-Management-System.git
 cd Library-Management-System
+
 2. Install required packages:
 pip install -r requirements.txt
 
