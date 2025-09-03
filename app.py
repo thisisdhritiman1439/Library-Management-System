@@ -444,11 +444,42 @@ def app():
         st.session_state['view_book'] = None
 
     # --------- Login/Signup ---------
-    if st.session_state['user'] is None:
+if st.session_state['user'] is None:
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
 
     st.markdown("## 🔐 Welcome To Library Management System")
-    choice = st.selectbox("Action", ["Login","Sign Up"], key="auth_choice")
+    choice = st.selectbox("Action", ["Login", "Sign Up"], key="auth_choice")
+
+    if choice == "Login":
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        if st.button("Login", use_container_width=True):
+            user = next((u for u in users if u["email"] == email and u["password"] == password), None)
+            if user:
+                st.session_state['user'] = user
+                st.success("✅ Login successful!")
+                st.rerun()
+            else:
+                st.error("❌ Invalid email or password")
+
+    elif choice == "Sign Up":
+        name = st.text_input("Full Name")
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        role = st.selectbox("Role", ["user", "librarian"])
+        if st.button("Sign Up", use_container_width=True):
+            if any(u["email"] == email for u in users):
+                st.error("❌ Email already registered")
+            else:
+                new_user = {"name": name, "email": email, "password": password, "role": role, "borrowed": [], "favorites": []}
+                users.append(new_user)
+                save_json(USERS_FILE, users)
+                st.success("✅ Account created successfully! Please login.")
+                st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.stop()
+
 
     
     if choice=="Sign Up":
