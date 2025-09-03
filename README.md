@@ -1,8 +1,3 @@
-Perfect 👍 Thanks for sharing the **previous README**. I’ll **merge your old one with the new one** I drafted, keeping the professional structure but adding the **new features, chatbot, analytics, notifications, future improvements, and updated authorship**.
-
-Here’s your **final combined `README.md`**:
-
-```markdown
 # 📚 Library Management System using Python and Streamlit
 
 A **full-featured, role-based Library Management System** built using **Python** and **Streamlit**, designed to digitize and automate library operations such as book issuing, returns, viewing, recommendations, and more.  
@@ -76,19 +71,16 @@ The system supports both **Students** and **Librarians**, offering secure login,
 
 ## 📂 Folder Structure
 
-```
-
 📁 Library-Management-System/
 │
-├── 📄 app.py                  # Main Streamlit application
-├── 📁 assets/                 # Book cover images
-├── 📄 books.json              # Book data with descriptions & availability
-├── 📄 users.json              # User data (students/librarians)
-├── 📄 issued\_books.json       # Issued book records
-├── 📄 requirements.txt        # Python dependencies
-└── 📄 README.md               # Project documentation
+├── 📄 app.py # Main Streamlit application
+├── 📁 assets/ # Book cover images
+├── 📄 books.json # Book data with descriptions & availability
+├── 📄 users.json # User data (students/librarians)
+├── 📄 issued_books.json # Issued book records
+├── 📄 requirements.txt # Python dependencies
+└── 📄 README.md # Project documentation
 
-````
 
 ---
 
@@ -105,85 +97,80 @@ The system supports both **Students** and **Librarians**, offering secure login,
 ```bash
 git clone https://github.com/thisisdhritiman1439/Library-Management-System.git
 cd Library-Management-System
-````
-
 2. Install required packages:
-
-```bash
 pip install -r requirements.txt
-```
 
 3. Run the app:
-
-```bash
 streamlit run app.py
-```
 
----
-
-## 📂 Demo Credentials
+📂 Demo Credentials
 
 Use these demo accounts for testing:
 
-* **Librarian**
+Librarian
 
-  * Email: `librarian@example.com`
-  * Password: `admin123`
+Email: librarian@example.com
 
-* **User**
+Password: admin123
 
-  * Email: `user@example.com`
-  * Password: `user123`
+User
 
----
+Email: user@example.com
 
-## 📷 Screenshots
+Password: user123
 
-> Add screenshots in the `assets/` folder and embed them here:
+📷 Screenshots
 
-* ✅ Login & Sign Up
-* 📚 View All Books
-* 📘 Book Description + Index
-* ➕ Add/Delete Book
-* 📥 Issue/Return Book
-* ⭐ Favorites
-* 🤖 Recommendation Panel
-* 💬 Chatbot Assistant
-* 📊 Analytics Dashboard
+Add screenshots in the assets/ folder and embed them here:
 
----
+✅ Login & Sign Up
 
-## 📈 Future Enhancements
+📚 View All Books
 
-* 📧 Email/OTP-based authentication
-* 🔍 Advanced search & filter system
-* 🧾 Export issued book reports to CSV/Excel
-* 📊 More detailed analytics dashboard for librarians
-* ☁️ Database integration (SQLite/PostgreSQL)
-* 📱 Mobile-friendly responsive design
+📘 Book Description + Index
 
----
+➕ Add/Delete Book
 
-## 👨‍💻 Developers
+📥 Issue/Return Book
 
-| Name                     | Role                     |
-| ------------------------ | ------------------------ |
-| Khandakar Nafees Hossain | Project Lead & Developer |
-| Dhritiman Bera           | Developer & Designer     |
-| Parthib Mahapatra        | Tester & Deployment      |
-| Mr. Subhabrata Sengupta  | Faculty Guide            |
-| Dr. Rupayan Das          | Faculty Guide            |
+⭐ Favorites
 
----
+🤖 Recommendation Panel
 
-## 📜 License
+💬 Chatbot Assistant
 
-This project is licensed under the [MIT License](LICENSE).
+📊 Analytics Dashboard
 
----
+📈 Future Enhancements
 
-## 🤝 Acknowledgments
+📧 Email/OTP-based authentication
 
-* Built with ❤️ using Python and Streamlit
-* Inspired by the real-world challenges of manual library systems
-* Enhanced with modern features like recommendations, chatbot, and analytics
+🔍 Advanced search & filter system
+
+🧾 Export issued book reports to CSV/Excel
+
+📊 More detailed analytics dashboard for librarians
+
+☁️ Database integration (SQLite/PostgreSQL)
+
+📱 Mobile-friendly responsive design
+
+👨‍💻 Developers
+Name	Role
+Khandakar Nafees Hossain	Project Lead & Developer
+Dhritiman Bera	Developer & Designer
+Parthib Mahapatra	Tester & Deployment
+Mr. Subhabrata Sengupta	Faculty Guide
+Dr. Rupayan Das	Faculty Guide
+📜 License
+
+This project is licensed under the MIT License
+.
+
+🤝 Acknowledgments
+
+Built with ❤️ using Python and Streamlit
+
+Inspired by the real-world challenges of manual library systems
+
+Enhanced with modern features like recommendations
