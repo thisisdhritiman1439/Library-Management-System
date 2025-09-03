@@ -17,7 +17,7 @@ ISSUED_FILE = "issued_books.json"
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
-# APP_TITLE = "📚 Welcome To Smart Library Management System"
+APP_TITLE = "📚 Welcome To Smart Library Management System"
 
 # -------------------------
 # Safe JSON helpers
