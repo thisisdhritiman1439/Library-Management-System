@@ -431,7 +431,7 @@ def app():
     <style>
     /* Full-page background */
     .stApp {
-        background: url("https://images.unsplash.com/photo-1670228260388-c5e536d0001c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D") no-repeat center center fixed;
+        background: url("https://images.unsplash.com/photo-1678138458795-793494b64ea7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGJsdXIlMjBsaWJyYXJ5JTIwd2l0aCUyMGJsYWNrJTIwYmFja2dyb3VuZHxlbnwwfHwwfHx8MA%3D%3D") no-repeat center center fixed;
         background-size: cover;
     }
     
