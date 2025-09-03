@@ -4,7 +4,7 @@ A **full-featured, role-based Library Management System** built using **Python**
 The system supports both **Students** and **Librarians**, offering secure login, detailed book previews, personalized recommendations, real-time notifications, chatbot assistance, and data stored in **JSON** format.
 
 ---
-## 🏆 Screenshots  
+## Screenshots  
 
 <p align="center">
   <img src="Screenshot/Screenshot.gif" width="500"/>
