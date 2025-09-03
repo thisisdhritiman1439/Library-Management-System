@@ -17,7 +17,7 @@ ISSUED_FILE = "issued_books.json"
 
 FINE_PER_DAY = 10
 DEFAULT_LOAN_DAYS = 14
-APP_TITLE = "📚 Library Management System"
+APP_TITLE = "📚 Welcome To Smart Library Management System"
 
 # -------------------------
 # Safe JSON helpers
@@ -426,6 +426,7 @@ def app():
 # -------------------------
 # Custom UI Styling
 # -------------------------
+    st.set_page_config(page_title=APP_TITLE, layout="wide")
     page_bg = """
     <style>
     /* Full-page background */
@@ -450,7 +451,6 @@ def app():
     </style>
     """
     st.markdown(page_bg, unsafe_allow_html=True)
-    st.title("📚 Welcome to the Library Management System")
 
     st.title(APP_TITLE)
     bootstrap_files()
