@@ -7,7 +7,7 @@ The system supports both **Students** and **Librarians**, offering secure login,
 ## 🏆 Screenshots  
 
 <p align="center">
-  <img src="Screenshot.gif" width="500"/>
+  <img src="Screenshot/Screenshot.gif" width="500"/>
 </p>
 
 ## 🚀 Features
