@@ -621,7 +621,7 @@ def app():
                     st.error("Current password incorrect.")
                 elif new != confirm:
                     st.error("New passwords do not match.")
-                elif:
+                else:
                     ok, msg = is_strong_password(new)
                     if not ok:
                         st.error(msg)
